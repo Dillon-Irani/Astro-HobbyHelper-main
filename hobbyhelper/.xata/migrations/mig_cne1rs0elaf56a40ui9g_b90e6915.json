@@ -1,0 +1,39 @@
+{
+  "id": "mig_cne1rs0elaf56a40ui9g",
+  "parentID": "mig_cne1qpgelaf56a40ui70",
+  "checksum": "1:b90e691594346016ff6908def2374230612b69bce8c7b7686a624e4c858b0375",
+  "operations": [
+    {
+      "addTable": {
+        "table": "product_category"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "product_category_id",
+          "type": "int"
+        },
+        "table": "product_category"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "parent_category_id",
+          "type": "int"
+        },
+        "table": "product_category"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "category_name",
+          "type": "string"
+        },
+        "table": "product_category"
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "mig_cne1gp0elaf56a40uhp0",
+  "parentID": "mig_cndsaioelaf56a40uetg",
+  "checksum": "1:99f582e538f7fe3d4ff97d9892d3907e026a40b19d52fb06b800e9a54fab45cf",
+  "operations": [
+    {
+      "addTable": {
+        "table": "test"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "table_name",
+          "type": "string"
+        },
+        "table": "test"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "column_name",
+          "type": "string"
+        },
+        "table": "test"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "data_type",
+          "type": "string"
+        },
+        "table": "test"
+      }
+    }
+  ]
+}

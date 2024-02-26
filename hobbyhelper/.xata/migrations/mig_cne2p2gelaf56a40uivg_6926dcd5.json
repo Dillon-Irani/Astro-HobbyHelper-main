@@ -1,0 +1,48 @@
+{
+  "id": "mig_cne2p2gelaf56a40uivg",
+  "parentID": "mig_cne2osgelaf56a40uiu0",
+  "checksum": "1:6926dcd5ca9b64d374228d20225efd582fa14d93a9c5c6c5e4fe0ad155e13c6a",
+  "operations": [
+    {
+      "addTable": {
+        "table": "product_configuration"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "product_item_id",
+          "type": "int"
+        },
+        "table": "product_configuration"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "variation_option_id",
+          "type": "int"
+        },
+        "table": "product_configuration"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "qty_in_stock",
+          "type": "int"
+        },
+        "table": "product_configuration"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "price",
+          "type": "float"
+        },
+        "table": "product_configuration"
+      }
+    }
+  ]
+}

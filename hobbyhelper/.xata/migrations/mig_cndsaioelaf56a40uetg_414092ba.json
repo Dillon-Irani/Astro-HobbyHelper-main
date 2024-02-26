@@ -1,0 +1,13 @@
+{
+  "id": "mig_cndsaioelaf56a40uetg",
+  "parentID": "mig_cndsa4gelaf56a40uesg",
+  "checksum": "1:414092baa73d916d58788ddc501814e0bdcbb4cea596107327afbde8a69c6e20",
+  "operations": [
+    {
+      "renameTable": {
+        "newName": "productCategory",
+        "oldName": "Product-category"
+      }
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+---
+import Layout from '../layouts/Layout.astro';
+import styles from '../styles/card.module.css'
+import { XataClient } from '.././xata.ts';
+
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+const { records: categories } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 50
+  }
+
+  
+})
+
+
+const { records: products } = await xata.db.product.getPaginated({
+  pagination: {
+    size: 50,
+  },
+});
+const { records: product_variation } = await xata.db.product_variation.getPaginated({
+  pagination: {
+    size: 50,
+  },
+});
+const { records: product_variation_option } = await xata.db.product_variation_option.getPaginated({
+  pagination: {
+    size: 50,
+  },
+});
+const { records: product_configuration } = await xata.db.product_configuration.getPaginated({
+  pagination: {
+    size: 50,
+  },
+});
+const getProducts = async (searchTerm) => {
+  const response = await fetch(`/api/products?search=${encodeURIComponent(searchTerm)}`);
+  const data = await response.json();
+  return data;
+};
+// Extract search query from the URL
+const url = import.meta.env.SSR ? 'https://your-website-url.com/' : location.href;
+const searchParams = new URLSearchParams(new URL(url).search);
+const searchTerm = searchParams.get('search');
+
+const filteredProducts = searchTerm ? getProducts(searchTerm) : [];
+
+// Function to find the most parent category name
+const findMostParentCategory = (categoryId) => {
+  const productCategory = categories.find((category) => category.product_category_id === categoryId);
+
+  if (productCategory) {
+    // If the category has a parent, recursively find the parent category
+    if (productCategory.parent_category_id) {
+      return findMostParentCategory(productCategory.parent_category_id);
+    } else {
+      // If there is no parent, return the category name
+      return productCategory.category_name;
+    }
+  }
+
+  // Return a default value if category is not found
+  return 'Category not available';
+};
+
+
+---
+
+<Layout title="Products">
+	<main>
+		
+		<div>
+			<h2 style="color: white; text-align: center; padding: 15px;">Inventory Page</h2>
+			<div class={`${styles['product-container']}`}>
+				
+				{products.map((product) => (
+				  <div ={product.product_id} class={styles['product-card']}>
+          <div class={styles['title-div']}>
+            <h1 class={styles['product-name']}>{product.product_name}</h1>
+            <div class={styles['price-div']}>
+              <span>Price Per Unit: </span>
+              <span class={styles['price']}>{`$ ${product_configuration.find(
+                (config) => config.product_item_id === product.product_id )?.price || 'Price not available'}`}</span>
+            </div>
+          </div>
+          <img
+            alt="image"
+            src={ 'https://play.teleporthq.io/static/svg/default-img.svg'}
+            class={styles['product-image']}
+          />
+          <div class={styles['brand-div']}>
+            <span class={styles['brand']}>Brand:</span>
+            <span class={styles['brand-name']}>{product.product_brand}</span>
+          </div>
+          <div class={styles['category-div']}>
+            <span class={styles['category']}>Category:</span>
+            <span class={styles['category-name']}>{categories.find(
+            (category) => category.product_category_id === product.category_id
+          )?.category_name || 'Category not available'}</span>
+          </div>
+          <div class={styles['type-div']}>
+            <span class={styles['type']}>Product Type:</span>
+            <span class={styles['type-name']}>{findMostParentCategory(product.category_id)}</span>
+          </div>
+          <div class={styles['description-div']}>
+            <span class={styles['description']}>Description:</span>
+            <span class={styles['description-text']}>{product.description}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+		
+	</main>
+	
+</Layout>
+
+

@@ -1,0 +1,66 @@
+{
+  "id": "mig_cne1s4oelaf56a40uib0",
+  "parentID": "mig_cne1rs0elaf56a40ui9g",
+  "checksum": "1:fb9068b16aed073af6c12bd1359b0aec803e549dfc5a3fbe41eb34c7a6bbb456",
+  "operations": [
+    {
+      "addTable": {
+        "table": "product"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "product_id",
+          "type": "int"
+        },
+        "table": "product"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "product_name",
+          "type": "string"
+        },
+        "table": "product"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "product_brand",
+          "type": "string"
+        },
+        "table": "product"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "category_id",
+          "type": "int"
+        },
+        "table": "product"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "description",
+          "type": "string"
+        },
+        "table": "product"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "product_image",
+          "type": "string"
+        },
+        "table": "product"
+      }
+    }
+  ]
+}

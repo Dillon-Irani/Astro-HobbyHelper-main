@@ -1,0 +1,21 @@
+{
+  "name": "hobbyhelper",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@xata.io/client": "^0.29.1",
+    "astro": "^4.4.2",
+    "pg": "^8.11.3"
+  },
+  "description": "```sh npm create astro@latest -- --template basics ```",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC"
+}

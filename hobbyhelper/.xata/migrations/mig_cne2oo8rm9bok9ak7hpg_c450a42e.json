@@ -1,0 +1,30 @@
+{
+  "id": "mig_cne2oo8rm9bok9ak7hpg",
+  "parentID": "mig_cne2diorm9bok9ak7hng",
+  "checksum": "1:c450a42e5e018381cdf420619db10838241e3cd1d09dda019920a0b9ddb74c9c",
+  "operations": [
+    {
+      "addTable": {
+        "table": "product_variation"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "product_variation_id",
+          "type": "int"
+        },
+        "table": "product_variation"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "name",
+          "type": "string"
+        },
+        "table": "product_variation"
+      }
+    }
+  ]
+}

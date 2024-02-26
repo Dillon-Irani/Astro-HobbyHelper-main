@@ -1,0 +1,11 @@
+{
+  "id": "mig_cndsa4gelaf56a40uesg",
+  "checksum": "1:60feb255ff546bd06e32299e803a661567466b1c14b130aad8e85b894be2f34d",
+  "operations": [
+    {
+      "addTable": {
+        "table": "Product-category"
+      }
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "databaseURL": "https://Dillon-Irani-s-workspace-b04ur7.us-east-1.xata.sh/db/hobbyHelper",
+  "codegen": {
+    "output": "src/xata.ts"
+  }
+}

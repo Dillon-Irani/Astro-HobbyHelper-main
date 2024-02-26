@@ -1,0 +1,100 @@
+---
+import Navigation from '../components/Navigation.astro';
+import Logo from '../images/Hobby-Helper-clean.png';
+
+---
+
+<style>
+  .header {
+    background-color: #0C1C2A; /* Dark Blue Background */
+    padding: 20px;
+    border-bottom: 3px solid #FFD700; /* Flowing Yellow Border */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    width: 150px; /* Adjust the size as needed */
+    margin-right: 10px; /* Add some margin for spacing */
+  }
+
+  .search-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-bar {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+  }
+
+  .search-bar input {
+    padding: 5px;
+    /* Add more styles as needed */
+  }
+
+  /* Arrow icon styling */
+  .arrow-icon {
+    margin-left: 5px;
+    transition: transform 0.3s ease-out; /* Add a transition effect for rotation */
+  }
+
+  /* Rotate the arrow when the search bar is open */
+  .search-bar.opened {
+    max-height: 200px; /* Adjust the max-height based on your content */
+  }
+
+  .search-bar.opened .arrow-icon {
+    transform: rotate(180deg);
+  }
+</style>
+
+<script is:inline>
+  function openSearchBar() {
+    const searchBar = document.querySelector('.search-bar');
+    const arrowIcon = document.querySelector('.arrow-icon');
+
+    searchBar.classList.toggle('opened');
+    arrowIcon.style.transform = searchBar.classList.contains('opened') ? 'rotate(180deg)' : 'rotate(0deg)';
+
+    console.log('Search button clicked');
+    
+    
+  }
+  function ProductSearch() {
+    const searchInput = document.querySelector('.search-bar input');
+    
+    if (searchInput.value.trim() !== '') {
+      // Perform the search and redirect
+      const searchTerm = searchInput.value.trim();
+      window.location.href = `/Products?search=${encodeURIComponent(searchTerm)}`;
+    }
+  }
+  
+</script>
+
+<div class="header">
+  <div class="logo">
+    <img src={Logo.src} alt="Logo" class="logo">
+  </div>
+  <button class="search-button" onclick="openSearchBar()">
+    Search
+    <span class="arrow-icon">&#x1F50D;</span>
+  </button>
+  <div class="search-bar">
+    <input type="text" placeholder="What are you looking for?">
+    <button  onclick="ProductSearch()">Search</button>
+  </div>
+  <div class="nav-items">
+    <Navigation />
+  </div>
+</div>
+
+
+

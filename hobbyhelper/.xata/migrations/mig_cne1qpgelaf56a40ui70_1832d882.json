@@ -1,0 +1,12 @@
+{
+  "id": "mig_cne1qpgelaf56a40ui70",
+  "parentID": "mig_cne1qg0elaf56a40ui60",
+  "checksum": "1:1832d882b06d266671420b413b4117580d7d10940566e261431386ffa7936ef0",
+  "operations": [
+    {
+      "removeTable": {
+        "table": "product_category"
+      }
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+import styles from '../styles/home.module.css'
+
+
+import { XataClient } from '.././xata';
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+const { records } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 50
+  }
+})
+---
+<Layout title='Welcome to Hobby Helper!'>
+
+<div class={styles['container']}>
+  <div id="top-container" class={styles['container1']}>
+    <div id="top-right" class={styles['container2']}>
+      <h1 class={styles['text']}>Featured Products</h1>
+      <img
+        alt="image"
+        src="https://a.storyblok.com/f/178900/900x506/2feac2371b/editorial_in-article_week-7_model-kits-sale_1280x720.jpg/m/filters:quality(95)format(webp)"
+        class={styles['image']}
+      />
+    </div>
+    <div class={styles['container3']}>
+      <h1 class={styles['text01']}>
+        <br></br>
+        <span>Some of this week&apos;s:</span>
+        <br></br>
+        <span>
+          new items,
+          <span
+          />
+        </span>
+        <br></br>
+        <span>
+          Items on sale,
+          <span
+          />
+        </span>
+        <br></br>
+        <span>and hot deals! </span>
+        <br></br>
+        <br></br>
+      </h1>
+    </div>
+  </div>
+  <div id="bottom-container" class={styles['container4']}>
+    <div id="bottom-left" class={styles['container5']}>
+      <h1 class={styles['text12']}>
+        <br></br>
+        <span>
+          Here is this news video for this week!
+          <span
+          />
+        </span>
+        <br></br>
+        <br></br>
+        <span>
+          Here we display some of the cool builds from our community events
+          and also share some upcoming kits and news for your favorite
+          hobbies!
+        </span>
+        <br></br>
+        <br></br>
+      </h1>
+    </div>
+    <div class={styles['container6']}>
+      <h1 class={styles['heading']}>News</h1>
+      <h1 class={styles['heading1']}>
+        Witch from Mercury  - [PROLOGUE]
+      </h1>
+      <iframe
+        src="https://www.youtube.com/embed/PjoLfWJlfyc?si=JsZNC_qz-3tEgkF7"
+        class={styles['iframe']}
+      ></iframe>
+    </div>
+  </div>
+</div>
+
+
+</Layout>
