@@ -50,6 +50,20 @@ const tables = [
       { name: "price", type: "float" },
     ],
   },
+  {
+    name: "hh_user",
+    columns: [
+      { name: "user_id", type: "int" },
+      { name: "username", type: "string" },
+      { name: "email_address", type: "email" },
+      { name: "password", type: "string" },
+      { name: "phone_number", type: "int" },
+      { name: "user_type", type: "string" },
+      { name: "age", type: "int" },
+      { name: "favourite_hobby", type: "string" },
+      { name: "bio", type: "string" },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
@@ -70,12 +84,16 @@ export type ProductVariationOptionRecord = ProductVariationOption & XataRecord;
 export type ProductConfiguration = InferredTypes["product_configuration"];
 export type ProductConfigurationRecord = ProductConfiguration & XataRecord;
 
+export type HhUser = InferredTypes["hh_user"];
+export type HhUserRecord = HhUser & XataRecord;
+
 export type DatabaseSchema = {
   product_category: ProductCategoryRecord;
   product: ProductRecord;
   product_variation: ProductVariationRecord;
   product_variation_option: ProductVariationOptionRecord;
   product_configuration: ProductConfigurationRecord;
+  hh_user: HhUserRecord;
 };
 
 const DatabaseClient = buildClient();

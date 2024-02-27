@@ -10,9 +10,12 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/vercel": "^7.3.4",
     "@xata.io/client": "^0.29.1",
     "astro": "^4.4.2",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "description": "```sh npm create astro@latest -- --template basics ```",
   "main": "index.js",

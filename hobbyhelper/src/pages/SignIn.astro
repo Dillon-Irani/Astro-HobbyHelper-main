@@ -1,0 +1,124 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+
+
+
+
+import { XataClient } from '.././xata';
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+const { records } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 50
+  }
+})
+
+const message = { username: "", password: "" };
+
+if (Astro.request.method === "POST") {
+  
+  try {
+    
+    const data = await Astro.request.formData();
+    const inputUsername = String(data.get("username"));
+    const inputPassword = String(data.get("password"));
+    
+    console.log(inputUsername);
+    // Fetch user data from the database
+    const users = await xata.db.hh_user
+      .filter({
+        $all:{
+        username: inputUsername ,
+        password: inputPassword ,
+      }
+      })
+      .getMany();
+      const { records } = await xata.db.hh_user.getPaginated({
+  pagination: {
+    size: 50
+  }
+})
+      console.log(users);
+    if (users.length > 0) {
+      // User found, perform login actions
+      message.username += "Exists logging in!";
+      // Redirect or perform further actions after successful sign-in
+    } else {
+      // User not found or password incorrect
+      message.username += "NO USER EXISTS";
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+}
+
+
+---
+<Layout title='Sign In'>
+  <style>
+    body {
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+  
+   
+  <div class="container">
+    <h2 style="text-align: center;">Sign In</h2>
+    
+    <form method="POST">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="submit">Sign In</button>
+      {message.username && <p>{message.username}</p>}
+      
+
+    </form>
+  </div>
+
+
+</Layout>

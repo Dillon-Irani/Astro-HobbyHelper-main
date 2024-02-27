@@ -1,0 +1,93 @@
+{
+  "id": "mig_cneod4buturo10a50bng",
+  "parentID": "mig_cneod14p5g7hi2v1uk20",
+  "checksum": "1:6de04edfe5bbb7194a7f8d98f79d49ff57aa82717b732fc3016fe9fdba3e21ce",
+  "operations": [
+    {
+      "addTable": {
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "user_id",
+          "type": "int"
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "username",
+          "type": "string"
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "email_address",
+          "type": "email"
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "password",
+          "type": "string"
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "phone_number",
+          "type": "int"
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "user_type",
+          "type": "string"
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "age",
+          "type": "int"
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "favourite_hobby",
+          "type": "string"
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "bio",
+          "type": "string"
+        },
+        "table": "hh_user"
+      }
+    }
+  ]
+}

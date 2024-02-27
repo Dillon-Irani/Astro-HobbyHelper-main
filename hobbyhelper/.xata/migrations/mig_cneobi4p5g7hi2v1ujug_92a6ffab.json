@@ -1,0 +1,87 @@
+{
+  "id": "mig_cneobi4p5g7hi2v1ujug",
+  "parentID": "mig_cne2p2gelaf56a40uivg",
+  "checksum": "1:92a6ffab7f3316d853be4e85ab5aa794550cf2b067e54a4b890163333f6a4e52",
+  "operations": [
+    {
+      "addTable": {
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "user_id",
+          "type": "int"
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "email_address",
+          "type": "email"
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "password",
+          "type": "string"
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "phone_number",
+          "type": "string",
+          "link": {
+            "table": "product_category"
+          }
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "user_type",
+          "type": "string"
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "age",
+          "type": "int"
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "favourite_hobby",
+          "type": "string"
+        },
+        "table": "hh_user"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "bio",
+          "type": "string"
+        },
+        "table": "hh_user"
+      }
+    }
+  ]
+}

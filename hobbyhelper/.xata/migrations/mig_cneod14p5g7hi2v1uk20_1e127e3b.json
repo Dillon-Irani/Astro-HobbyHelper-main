@@ -1,0 +1,12 @@
+{
+  "id": "mig_cneod14p5g7hi2v1uk20",
+  "parentID": "mig_cneocdcp5g7hi2v1uk10",
+  "checksum": "1:1e127e3b9087b9177ffb3473e1bbd0b0bcbc18ef067294ab52d7c3ecdfe2defe",
+  "operations": [
+    {
+      "removeTable": {
+        "table": "hh_user"
+      }
+    }
+  ]
+}

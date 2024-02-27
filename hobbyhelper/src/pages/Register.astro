@@ -1,0 +1,170 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { XataClient } from '.././xata';
+
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+
+
+const { records: hobbyCategories } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 50
+  }
+})
+const message = { username: "", password: "", email: "" };
+
+if (Astro.request.method === "POST") {
+  try {
+    const data = await Astro.request.formData();
+
+    
+    // Fetch users sorted by user_id in descending order
+    const { records: recentusers } = await xata.db.hh_user
+      .sort( 'user_id', 'desc' )
+      .getPaginated({ pagination: { size: 1 } });
+
+    // Calculate the new user_id
+    const newUser_id = recentusers.length > 0 ? recentusers[0].user_id + 1 : 1;
+
+
+
+    const inputUsername = String(data.get("username"));
+    const inputPassword = String(data.get("password"));
+    const inputPhone = String(data.get("phone"));
+    const inputAge = String(data.get("age"));
+    const inputEmail = String(data.get("email"));
+    const inputFavHobby = String(data.get("favouriteHobby"));
+    const inputBio = String(data.get("bio")); 
+
+    const userPhone = parseInt(inputPhone);
+    const userAge = parseInt(inputAge);
+    console.log(inputUsername, inputPassword, inputEmail, inputBio);
+    // Fetch user data from the database
+    const users = await xata.db.hh_user
+      .filter({
+        username: inputUsername,
+      })
+      .getMany();
+
+    if (users.length > 0) {
+      // User already exists
+      message.username = "Username is already taken. Please choose another one.";
+    } else {
+      // User doesn't exist, you can proceed with registration
+      const newUser = await xata.db.hh_user.create({
+        user_id: newUser_id,
+        username: inputUsername,
+        password: inputPassword,
+        email_address: inputEmail, 
+        phone_number: userPhone,
+        age: userAge,
+        favourite_hobby: inputFavHobby,
+        bio: inputBio,
+        user_type: 'user'
+
+      });
+
+      message.username = `User ${newUser.username} registered successfully!`;
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+}
+---
+<style>
+  body {
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+  }
+
+  .container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+    /* Set a fixed height for the textarea */
+    height: 100px; /* Adjust the height as needed */
+    /* Add other styling properties as needed */
+  }
+
+  button {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+</style>
+<Layout title='Register'>
+  <style>
+    {/* Your styling goes here */}
+  </style>
+  
+  <div class="container">
+    <h2 style="text-align: center;">Register</h2>
+    
+    <form method="POST">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required />
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+
+      {/* Add email field */}
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="phone">Phone Number:</label>
+      <input type="number" id="phone" name="phone" required />
+
+      <label for="age">Age:</label>
+      <input type="number" id="age" name="age" required />
+
+      <label for="favouriteHobby">Favourite Hobby:</label>
+      <select id="favouriteHobby" name="favouriteHobby" required>
+        {hobbyCategories.map(category => (
+          <option id={category.id} value={category.category_name}>
+            {category.category_name}
+          </option>
+        ))}
+      </select>
+
+      <label for="bio">Bio:</label>
+      
+      <textarea id="bio" name="bio" style="width: 100%; height: 100px; resize: none;" rows="4" cols="50 " required ></textarea>
+      <button type="submit">Register</button>
+      {message.username && <p>{message.username}</p>}
+    </form>
+  </div>
+</Layout>

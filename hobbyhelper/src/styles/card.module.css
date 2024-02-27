@@ -7,6 +7,7 @@
   border-color: var(--dl-color-gray-black);
   border-style: dashed;
   border-width: 2px;
+  
   justify-content: center;
 }
 
@@ -15,11 +16,14 @@
   height: 655px;
   display: flex;
   align-items: flex-start;
+  padding-bottom: 15px ;
+  margin-bottom: 15px ;
   justify-content: flex-start;
 }
 
 .product-container {
   width: 100%;
+  
   display: flex;
   flex-wrap: wrap; /* Allow wrapping to next line */
   justify-content: space-around; /* Space around the items */
@@ -37,9 +41,9 @@
 }
 
 .product-card {
+  margin-bottom: 25px; 
   width: 375px;
   height: 583px;
-  margin: var(--dl-space-space-unit);
   display: flex;
   padding: 5px;
   align-self: center;

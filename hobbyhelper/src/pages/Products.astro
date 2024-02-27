@@ -15,7 +15,6 @@ const { records: categories } = await xata.db.product_category.getPaginated({
   
 })
 
-
 const { records: products } = await xata.db.product.getPaginated({
   pagination: {
     size: 50,
