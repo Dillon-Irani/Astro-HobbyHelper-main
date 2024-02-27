@@ -62,17 +62,24 @@ if (Astro.request.method === "POST") {
 <Layout title='Sign In'>
   <style>
     body {
-      background-color: #f0f0f0;
+      background-image: url("../images/background2.gif");
       font-family: Arial, sans-serif;
+      background-size: cover;
     }
 
     .container {
       max-width: 400px;
       margin: 50px auto;
       padding: 20px;
-      background-color: #fff;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      display: flex;
+      overflow: auto;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      background-color: #6d7ab7;
     }
 
     label {
