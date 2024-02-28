@@ -1,6 +1,10 @@
 ---
 import Navigation from '../components/Navigation.astro';
 import Logo from '../images/Hobby-Helper-clean.png';
+import { userInfo, getUserInfo, isLoggedIn  } from './userInformation';
+
+
+  console.log(getUserInfo().username);
 
 ---
 
@@ -85,14 +89,24 @@ import Logo from '../images/Hobby-Helper-clean.png';
   <div class="logo">
     <img src={Logo.src} alt="Logo" class="logo">
   </div>
-  <button class="search-button" onclick="openSearchBar()">
-    Search
-    <span class="arrow-icon">&#x1F50D;</span>
-  </button>
+
+  {isLoggedIn.get() ? (
+    <div class="user-welcome">
+      <p>Welcome back, {getUserInfo().username}!</p>
+      <button onclick="handleLogout()">Logout</button>
+    </div>
+  ) : (
+    <button class="search-button" onclick="openSearchBar()">
+      Search
+      <span class="arrow-icon">&#x1F50D;</span>
+    </button>
+  )}
+  
   <div class="search-bar">
     <input type="text" placeholder="What are you looking for?">
-    <button  onclick="ProductSearch()">Search</button>
+    <button onclick="ProductSearch()">Search</button>
   </div>
+  
   <div class="nav-items">
     <Navigation />
   </div>

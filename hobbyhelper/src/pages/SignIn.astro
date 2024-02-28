@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 import bcrypt from "bcrypt";
 import { XataClient } from '.././xata';
+import {getUserInfo, setUserInfo, isLoggedIn } from '../components/userInformation.js';
 
 const xata = new XataClient({
   apiKey: import.meta.env.XATA_API_KEY,
@@ -33,11 +34,28 @@ if (Astro.request.method === "POST") {
     if (users.length > 0) {
       const storedPasswordHash = users[0].password;
       const userType = users[0].user_type;
+      const dbUsername = users[0].username;
+      const userId = users[0].user_id;
       // Compare the provided password with the stored hash
       const passwordMatch = await bcrypt.compare(inputPassword, storedPasswordHash);
 
       if (passwordMatch) {
         // Passwords match, login 
+        // Update userInfo store with user information
+        
+          const userInfo = {
+          id: userId,
+          username: dbUsername,
+          userType: userType}
+
+        
+        setUserInfo(userInfo);
+        console.log(userInfo);
+        console.log(getUserInfo());
+        // Set isLoggedIn to true
+        isLoggedIn.set(true);
+        
+
         message.username += "Logged in successfully!";
         return Astro.redirect('/HobbyHome');
       } else {
