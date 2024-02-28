@@ -1,0 +1,16 @@
+{
+  "id": "mig_cnfd2gldo47p3g5ce2mg",
+  "parentID": "mig_cnfd2ctdo47p3g5ce2lg",
+  "checksum": "1:f34e6a3091153e87c31cde1faa46d39d6c627a3dfb916fb873d2228f68ac842e",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "phone",
+          "type": "int"
+        },
+        "table": "hh_contact_us"
+      }
+    }
+  ]
+}

@@ -1,25 +1,25 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { XataClient } from '.././xata';
+import bcrypt from "bcrypt";
 
 const xata = new XataClient({
   apiKey: import.meta.env.XATA_API_KEY,
   branch: import.meta.env.XATA_BRANCH
 });
 
-
 const { records: hobbyCategories } = await xata.db.product_category.getPaginated({
   pagination: {
     size: 50
   }
-})
+});
+
 const message = { username: "", password: "", email: "" };
 
 if (Astro.request.method === "POST") {
   try {
     const data = await Astro.request.formData();
 
-    
     // Fetch users sorted by user_id in descending order
     const { records: recentusers } = await xata.db.hh_user
       .sort( 'user_id', 'desc' )
@@ -27,8 +27,6 @@ if (Astro.request.method === "POST") {
 
     // Calculate the new user_id
     const newUser_id = recentusers.length > 0 ? recentusers[0].user_id + 1 : 1;
-
-
 
     const inputUsername = String(data.get("username"));
     const inputPassword = String(data.get("password"));
@@ -41,6 +39,9 @@ if (Astro.request.method === "POST") {
     const userPhone = parseInt(inputPhone);
     const userAge = parseInt(inputAge);
     console.log(inputUsername, inputPassword, inputEmail, inputBio);
+
+    const hashedPassword = await bcrypt.hash(inputPassword, 10);
+
     // Fetch user data from the database
     const users = await xata.db.hh_user
       .filter({
@@ -56,14 +57,13 @@ if (Astro.request.method === "POST") {
       const newUser = await xata.db.hh_user.create({
         user_id: newUser_id,
         username: inputUsername,
-        password: inputPassword,
+        password: hashedPassword,
         email_address: inputEmail, 
         phone_number: userPhone,
         age: userAge,
         favourite_hobby: inputFavHobby,
         bio: inputBio,
         user_type: 'user'
-
       });
 
       message.username = `User ${newUser.username} registered successfully!`;
@@ -75,19 +75,59 @@ if (Astro.request.method === "POST") {
   }
 }
 ---
+
 <style>
-  body {
-    background-color: #f0f0f0;
-    font-family: Arial, sans-serif;
-  }
+  
+
+body  {
+    background-image: url('https://wallpapercave.com/wp/wp5294549.jpg');
+  background-size:cover;
+        -webkit-animation: slidein 100s;
+        animation: slidein 100s;
+
+        -webkit-animation-fill-mode: forwards;
+        animation-fill-mode: forwards;
+
+        -webkit-animation-iteration-count: infinite;
+        animation-iteration-count: infinite;
+
+        -webkit-animation-direction: alternate;
+        animation-direction: alternate;              
+}
+
+@-webkit-keyframes slidein {
+from {background-position: top; background-size:3000px; }
+to {background-position: -100px 0px;background-size:2750px;}
+}
+
+@keyframes slidein {
+from {background-position: top;background-size:3000px; }
+to {background-position: -100px 0px;background-size:2750px;}
+
+}
 
   .container {
     max-width: 400px;
     margin: 50px auto;
     padding: 20px;
-    background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    display: flex;
+    overflow: auto;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #6d7ab7;
+  }
+
+  .background {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
   }
 
   label {
@@ -103,16 +143,6 @@ if (Astro.request.method === "POST") {
     box-sizing: border-box;
   }
 
-  textarea {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 16px;
-    box-sizing: border-box;
-    /* Set a fixed height for the textarea */
-    height: 100px; /* Adjust the height as needed */
-    /* Add other styling properties as needed */
-  }
-
   button {
     background-color: #4caf50;
     color: #fff;
@@ -125,14 +155,52 @@ if (Astro.request.method === "POST") {
   button:hover {
     background-color: #45a049;
   }
+
+  .confirmation {
+    color: white;
+  }
+
+  .confirmation-message {
+    background-color: #4CAF50; /* Green background */
+    color: #fff; /* White text */
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 1px;
+    text-align: center;
+  }
+
+  .error-message {
+    background-color: red;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 1px;
+    text-align: center;
+  }
+  .join-title {
+  font-size: 2em;
+  color: #fff; 
+  text-align: center;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  background: linear-gradient(to right, #000000dd, #ffffffca);
+  border-radius: 8px;
+  padding: 5px;
+  }
+
 </style>
+
 <Layout title='Register'>
-  <style>
-    {/* Your styling goes here */}
-  </style>
-  
+  {message.username && (
+    <div class={message.username.includes("successfully") ? "confirmation-message" : "error-message"}>
+      <p class="confirmation">{message.username}</p>
+    </div>
+  )}
+
+  <div class="background"></div>
+
   <div class="container">
-    <h2 style="text-align: center;">Register</h2>
+    <h2 class="join-title">Join the Hobby HUB!</h2>
     
     <form method="POST">
       <label for="username">Username:</label>
@@ -161,10 +229,8 @@ if (Astro.request.method === "POST") {
       </select>
 
       <label for="bio">Bio:</label>
-      
-      <textarea id="bio" name="bio" style="width: 100%; height: 100px; resize: none;" rows="4" cols="50 " required ></textarea>
+      <textarea id="bio" name="bio" style="width: 100%; height: 100px; resize: none;" rows="4" cols="50" required ></textarea>
       <button type="submit">Register</button>
-      {message.username && <p>{message.username}</p>}
     </form>
   </div>
 </Layout>

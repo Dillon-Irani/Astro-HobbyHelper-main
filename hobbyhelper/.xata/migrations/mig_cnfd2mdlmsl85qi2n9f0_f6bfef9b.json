@@ -1,0 +1,16 @@
+{
+  "id": "mig_cnfd2mdlmsl85qi2n9f0",
+  "parentID": "mig_cnfd2gldo47p3g5ce2mg",
+  "checksum": "1:f6bfef9bfe0d991bb3a7ba96c12f397e4d4f7098b3460c13cf1f1698f2af7a58",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "message",
+          "type": "string"
+        },
+        "table": "hh_contact_us"
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "mig_cnfd115do47p3g5ce2i0",
+  "parentID": "mig_cnfd0stlmsl85qi2n9c0",
+  "checksum": "1:0c5c57a930f2b75b40a5de7ef5eee63f50b2cc7b29d44ae151c26f52791ce9f2",
+  "operations": [
+    {
+      "renameTable": {
+        "newName": "hh_contact_us",
+        "oldName": "hh_contactUs"
+      }
+    }
+  ]
+}

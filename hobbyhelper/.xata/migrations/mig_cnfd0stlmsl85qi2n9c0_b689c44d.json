@@ -1,0 +1,12 @@
+{
+  "id": "mig_cnfd0stlmsl85qi2n9c0",
+  "parentID": "mig_cneod4buturo10a50bng",
+  "checksum": "1:b689c44d1e5555c23ca55edb3051f47df88496217be1c32b3701b829ae1a67a5",
+  "operations": [
+    {
+      "addTable": {
+        "table": "hh_contactUs"
+      }
+    }
+  ]
+}

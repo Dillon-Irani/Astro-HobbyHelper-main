@@ -64,6 +64,15 @@ const tables = [
       { name: "bio", type: "string" },
     ],
   },
+  {
+    name: "hh_contact_us",
+    columns: [
+      { name: "name", type: "string" },
+      { name: "email", type: "string" },
+      { name: "phone", type: "int" },
+      { name: "message", type: "string" },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
@@ -87,6 +96,9 @@ export type ProductConfigurationRecord = ProductConfiguration & XataRecord;
 export type HhUser = InferredTypes["hh_user"];
 export type HhUserRecord = HhUser & XataRecord;
 
+export type HhContactUs = InferredTypes["hh_contact_us"];
+export type HhContactUsRecord = HhContactUs & XataRecord;
+
 export type DatabaseSchema = {
   product_category: ProductCategoryRecord;
   product: ProductRecord;
@@ -94,6 +106,7 @@ export type DatabaseSchema = {
   product_variation_option: ProductVariationOptionRecord;
   product_configuration: ProductConfigurationRecord;
   hh_user: HhUserRecord;
+  hh_contact_us: HhContactUsRecord;
 };
 
 const DatabaseClient = buildClient();
