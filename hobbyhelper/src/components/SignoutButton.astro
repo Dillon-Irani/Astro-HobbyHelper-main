@@ -1,0 +1,24 @@
+---
+import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from './userInformation.js';
+
+if (Astro.request.method === "POST") {
+  try {
+    const data = await Astro.request.formData();
+    const logoutButtonClicked = data.has('logout');
+
+    if (logoutButtonClicked) {
+      clearUserInfo();
+      return Astro.redirect('/HobbyHome');
+    }
+
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+}
+---
+
+<form method="POST">
+  <button type="submit" name="logout">Sign Out</button>
+</form>

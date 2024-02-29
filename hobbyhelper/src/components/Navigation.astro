@@ -14,32 +14,19 @@ import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from './userInforma
 </style>
 
 
-<script is:inline>
-function handleLogout() {
-  // Clear user information
-  clearUserInfo();
 
-  // Set isLoggedIn to false
-  isLoggedIn.set(false);
-
-  // Redirect to the desired logout page or perform other actions if needed
-  // window.location.href = '/SignIn'; // Uncomment and adjust the URL if needed
-}
-
-</script>
 <nav>
   <a class="nav-link" href="/">REACT DEMO</a>
   <a class="nav-link" href="/HobbyHome/">Hobby Home</a>
   <a class="nav-link" href="/Products/">Products</a>
   <a class="nav-link" href="/BacklogBuilder/">Backlog Builder</a>
-  <a class="nav-link" href="/Profile/">Profile</a>
   <a class="nav-link" href="/ContactUs/">Contact Us</a>
   <a class="nav-link" href="/RequestProduct/">Request Products</a>
 
   {isLoggedIn.get() ? (
     // Render links when the user is logged in
     <>
-      <a class="nav-link" href="/HobbyHome/" onclick="handleLogout()">Logout</a>
+      <a class="nav-link" href="/Profile/">Profile</a>
     </>
   ) : (
     // Render links when the user is not logged in

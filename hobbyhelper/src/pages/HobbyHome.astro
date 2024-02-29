@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 import styles from '../styles/home.module.css'
-
+import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from '../components/userInformation';
 
 import { XataClient } from '.././xata';
 const xata = new XataClient({
@@ -14,7 +14,17 @@ const { records } = await xata.db.product_category.getPaginated({
     size: 50
   }
 })
+
+
+console.log(getUserInfo());
 ---
+<script>
+
+
+
+
+
+</script>
 <Layout title='Welcome to Hobby Helper!'>
 
 <div class={styles['container']}>

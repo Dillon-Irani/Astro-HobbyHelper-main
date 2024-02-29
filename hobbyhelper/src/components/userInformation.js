@@ -14,6 +14,7 @@ export const userInfo = map({});
 
 export function setUserInfo({ id, username, userType }) {
   userInfo.set({ id, username, userType });
+  
 }
 
 export function getUserInfo() {
@@ -21,6 +22,7 @@ export function getUserInfo() {
 }
 
 export function clearUserInfo() {
+  console.log('run')
   userInfo.set({});
   isLoggedIn.set(false);
 }
