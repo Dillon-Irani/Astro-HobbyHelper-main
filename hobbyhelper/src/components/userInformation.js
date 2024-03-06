@@ -18,7 +18,7 @@ export function setUserInfo({ id, username, userType }) {
 }
 
 export function getUserInfo() {
-  return userInfo.get('userInfo');
+  return userInfo.get();
 }
 
 export function clearUserInfo() {

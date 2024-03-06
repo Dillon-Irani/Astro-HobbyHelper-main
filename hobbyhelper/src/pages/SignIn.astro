@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
+import Login from '../components/Login.tsx';
 import bcrypt from "bcrypt";
 import { XataClient } from '.././xata';
 import {getUserInfo, setUserInfo, isLoggedIn } from '../components/userInformation.js';
@@ -74,7 +75,7 @@ if (Astro.request.method === "POST") {
 }
 ---
 <script>
-
+import {getUserInfo, setUserInfo, isLoggedIn } from '../components/userInformation.js';
 
   </script>
 <style>
@@ -159,7 +160,7 @@ if (Astro.request.method === "POST") {
 
   <div class="container">
     <h2 style="text-align: center;">Sign In</h2>
-    
+    <Login client:load/>
     <form method="POST">
       <label for="username">Username:</label>
       <input type="text" id="username" name="username" required>
