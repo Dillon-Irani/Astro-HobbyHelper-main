@@ -1,0 +1,165 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { XataClient } from '.././xata';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+
+// Fetch products from the database
+const { records: products } = await xata.db.product.getPaginated({
+  pagination: {
+    size: 50,
+  },
+});
+
+// Create page objects dynamically for each product
+const pages = products.map(product => ({
+  slug: `Products/${product.product_id}`,
+  title: product.product_name,
+  text: product.description,
+}));
+
+// Add other static pages if needed
+pages.push(
+  {
+    slug: "404",
+    title: ':(',
+    text: 'Welcome to Failure!',
+  },
+  {
+    slug: 'cart',
+    title: 'Astro products',
+    text: 'We have lots of products for you',
+  }
+);
+
+const { slug } = Astro.params;
+const page = pages.find((page) => page.slug === slug);
+if (!page) return Astro.redirect("/404");
+const { title, text } = page;
+
+
+
+---
+<style>
+.home-container {
+  width: 100%;
+  display: flex;
+  overflow: auto;
+  min-height: 100vh;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.home-container1 {
+  flex: 0 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.home-container2 {
+  width: 50%;
+  height: 410px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.home-image {
+  width: 396px;
+  height: 329px;
+  object-fit: cover;
+}
+.home-container3 {
+  width: 50%;
+  height: 589px;
+  display: flex;
+  align-self: flex-end;
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.home-text {
+  align-self: flex-start;
+  padding-top: var(--dl-space-space-threeunits);
+}
+.home-text03 {
+  align-self: flex-start;
+  padding-top: var(--dl-space-space-threeunits);
+}
+.home-text06 {
+  align-self: flex-start;
+  padding-top: var(--dl-space-space-threeunits);
+}
+.home-text09 {
+  align-self: flex-start;
+  padding-top: var(--dl-space-space-threeunits);
+}
+.home-text12 {
+  align-self: flex-start;
+  padding-top: var(--dl-space-space-threeunits);
+}
+.home-container4 {
+  width: 50%;
+  height: 178px;
+  display: flex;
+  align-items: flex-start;
+  border-color: #000000;
+  border-style: dashed;
+  border-width: 2px;
+}
+
+</style>
+<Layout title={title} >
+<html>
+<head>
+  <title>{title}</title>
+</head>
+<body>
+  <h1>{title}</h1>
+  <p>{text}</p>
+</body>
+
+<div class="home-container">
+  <div class="home-container1">
+    <div class="home-container2">
+      <img
+        src="https://play.teleporthq.io/static/svg/default-img.svg"
+        alt="image"
+        class="home-image"
+      />
+    </div>
+    <div class="home-container3">
+      <span class="home-text">
+        <span>Product Name</span>
+        <br />
+      </span>
+      <span class="home-text03">
+        <span>Brand</span>
+        <br />
+      </span>
+      <span class="home-text06">
+        <span>Category</span>
+        <br />
+      </span>
+      <span class="home-text09">
+        <span>Price</span>
+        <br />
+      </span>
+      <span class="home-text12">
+        <span>Description</span>
+        <br />
+      </span>
+    </div>
+  </div>
+  <div class="home-container4"></div>
+</div>
+</div>
+</body>
+
+</html>
+
+</Layout>

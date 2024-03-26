@@ -64,7 +64,17 @@ const findMostParentCategory = (categoryId) => {
   // Return a default value if category is not found
   return 'Category not available';
 };
-
+// Extract the search query from Astro.params
+const searchQuery = Astro.params?.search;
+console.log('Search term:', decodeURIComponent(searchQuery));
+// Check if the search query exists
+if (searchQuery) {
+  // The URL includes a search query
+  console.log('Search term:', decodeURIComponent(searchQuery));
+} else {
+  // The URL does not include a search query
+  console.log('No search term provided.');
+}
 
 ---
 
@@ -72,10 +82,13 @@ const findMostParentCategory = (categoryId) => {
 	<main>
 		
 		<div>
+      
 			<h2 style="color: white; text-align: center; padding: 15px;">Inventory Page</h2>
-			<div class={`${styles['product-container']}`}>
+			
+      <div class={`${styles['product-container']}`}>
 				
 				{products.map((product) => (
+          <a href={"/Products/" + product.product_id}>
 				  <div ={product.product_id} class={styles['product-card']}>
           <div class={styles['title-div']}>
             <h1 class={styles['product-name']}>{product.product_name}</h1>
@@ -109,7 +122,9 @@ const findMostParentCategory = (categoryId) => {
             <span class={styles['description-text']}>{product.description}</span>
           </div>
         </div>
+      </a>
       ))}
+      
     </div>
 		
 	</main>

@@ -14,11 +14,11 @@ const userData = getUserInfo();
 
 <style>
   .header {
-    background-color: #345674; /* Dark Blue Background */
+    background-color: #1B1A55; /* Dark Blue Background */
     padding: 20px;
     margin-bottom: 20px;
     
-    border-bottom: 3px solid #FFD700; /* Flowing Yellow Border */
+    border-bottom: 3px solid #9290C3; /* Flowing Yellow Border */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -84,11 +84,12 @@ const userData = getUserInfo();
     const searchInput = document.querySelector('.search-bar input');
     
     if (searchInput.value.trim() !== '') {
-      // Perform the search and redirect
-      const searchTerm = searchInput.value.trim(); 
-      window.location.href = `/Products?search=${encodeURIComponent(searchTerm)}`;
+        // Perform the search and redirect
+        const searchTerm = searchInput.value.trim(); 
+        window.location.href = `/Products?search=${encodeURIComponent(searchTerm)}`;
     }
-  }
+}
+  
   
     
   
