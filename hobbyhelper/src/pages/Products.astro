@@ -12,9 +12,7 @@ const { records: categories } = await xata.db.product_category.getPaginated({
     size: 50
   }
 
-  
 })
-
 const { records: products } = await xata.db.product.getPaginated({
   pagination: {
     size: 50,
@@ -76,16 +74,22 @@ if (searchQuery) {
   // The URL does not include a search query
   console.log('No search term provided.');
 }
-
 ---
 
 <Layout title="Products">
+  
 	<main>
 		
 		<div>
       
 			<h2 style="color: white; text-align: center; padding: 15px;">Inventory Page</h2>
-			
+			<div style="text-align: center; margin-bottom: 20px;">
+        <button onclick="setFilteredProducts(null)">All</button> <!-- Button to show all products -->
+        <!-- Create buttons for each category -->
+        {categories.map(category => (
+            <button onclick="filterProducts($,{category,product_category_id})">{category.category_name}</button>
+        ))}
+    </div>
       <div class={`${styles['product-container']}`}>
 				
 				{products.map((product) => (
@@ -127,7 +131,9 @@ if (searchQuery) {
       ))}
       
     </div>
-		
+		<div style="text-align: center;">
+      <button onclick="loadMoreProducts()">Load More Products</button>
+  </div>
 	</main>
 	
 </Layout>
