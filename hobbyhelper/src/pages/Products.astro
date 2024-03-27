@@ -65,6 +65,7 @@ const findMostParentCategory = (categoryId) => {
   return 'Category not available';
 };
 // Extract the search query from Astro.params
+
 const searchQuery = Astro.params?.search;
 console.log('Search term:', decodeURIComponent(searchQuery));
 // Check if the search query exists
@@ -99,10 +100,10 @@ if (searchQuery) {
             </div>
           </div>
           <img
-            alt="image"
-            src={ 'https://play.teleporthq.io/static/svg/default-img.svg'}
-            class={styles['product-image']}
-          />
+                alt="image"
+                src={product.product_image ? product.product_image : 'https://i.imgur.com/O01kM4S.jpg'}
+                class={styles['product-image']}
+              />
           <div class={styles['brand-div']}>
             <span class={styles['brand']}>Brand:</span>
             <span class={styles['brand-name']}>{product.product_brand}</span>

@@ -25,6 +25,23 @@ const { records: product_configuration } = await xata.db.product_configuration.g
     size: 50,
   },
 });
+const { records: product_variation } = await xata.db.product_variation.getPaginated({
+  pagination: {
+    size: 50,
+  },
+});
+const { records: product_variation_option } = await xata.db.product_variation_option.getPaginated({
+  pagination: {
+    size: 50,
+  },
+});
+
+
+
+
+
+
+
 const findMostParentCategory = (categoryId) => {
   const productCategory = categories.find((category) => category.product_category_id === categoryId);
 
@@ -37,7 +54,6 @@ const findMostParentCategory = (categoryId) => {
       return productCategory.category_name;
     }
   }
-
   // Return a default value if category is not found
   return 'Category not available';
 };
@@ -48,20 +64,23 @@ const findProductPrice = (productId) => {
 // Create page objects dynamically for each product
 const pages = products.map(product => ({
   slug: `Products/${product.product_id}`,
+  id: product.product_id,
   title: product.product_name,
   description: product.description,
   brand: product.product_brand,
+  img: product.product_image,
   type: findMostParentCategory(product.category_id),
   category:categories.find(
                 (category) => category.product_category_id === product.category_id
               )?.category_name || 'Category not available',
   priceDisplay: findProductPrice(product.product_id),
 }));
+// Add other static pages if needed
 
 const { slug } = Astro.params;
 const page = pages.find((page) => page.slug === slug);
-if (!page) return Astro.redirect("/404");
-const { title, brand, description, category, priceDisplay, type } = page;
+if (!page) return Astro.redirect("/HobbyHome");
+const { title, brand, description, category, priceDisplay, type, img } = page;
 
 
 
@@ -81,6 +100,33 @@ const shuffledProductsInSameCategory = shuffleArray(productsInSameCategory);
 
 // Display a random selection of 4 products from the same category (epic win)
 const recommendedProducts = shuffledProductsInSameCategory.slice(0, 4);
+
+
+// Find the product configuration for the current product
+const productConfiguration = product_configuration.find(config => config.product_item_id === page.id);
+
+// Initialize variation name and option value with default values
+let variationName = 'Variation not available';
+let variationOptionValue = 'Option value not set';
+// Check if productConfiguration exists and has a variation_option_id
+if (productConfiguration && productConfiguration.variation_option_id) {
+  // Find the associated variation option for the product configuration
+  const productVariationOption = product_variation_option.find(option => option.variation_option_id === productConfiguration.variation_option_id);
+  
+  // Check if productVariationOption exists
+  if (productVariationOption) {
+    // Find the associated variation name for the product configuration
+    const productVariationName = product_variation.find(variation => variation.product_variation_id === productVariationOption.product_variation_id);
+
+    // Update variationName if productVariationName exists
+    if (productVariationName) {
+      variationName = productVariationName.name;
+    }
+    // Update variationOptionValue
+    variationOptionValue = productVariationOption.value;
+  }
+}
+
 
 
 ---
@@ -111,9 +157,9 @@ const recommendedProducts = shuffledProductsInSameCategory.slice(0, 4);
   justify-content: center;
 }
 .home-image {
-  width: 396px;
-  height: 329px;
-  object-fit: cover;
+  
+  height: 414px;
+  object-fit: fit;
 }
 .home-container3 {
   
@@ -152,10 +198,10 @@ const recommendedProducts = shuffledProductsInSameCategory.slice(0, 4);
 .home-container4 {
 
   width: 50%;
-  height: 200px;
+  
   display: flex;
   align-items: flex-start;
-  border-color: #000000;
+  border-color: #ffffff;
   border-style: dashed;
   border-width: 2px;
 }
@@ -170,7 +216,7 @@ const recommendedProducts = shuffledProductsInSameCategory.slice(0, 4);
   <div class="home-container1">
     <div class="home-container2">
       <img
-        src="https://play.teleporthq.io/static/svg/default-img.svg"
+        src={img ? img : 'https://i.imgur.com/O01kM4S.jpg'}
         alt="image"
         class="home-image"
       />
@@ -200,8 +246,13 @@ const recommendedProducts = shuffledProductsInSameCategory.slice(0, 4);
         <span>Description: {description}</span>
         <br />
       </span>
+      <span class="home-text06">
+        <span>{variationName}: {variationOptionValue}</span>
+        <br />
+      </span>
     </div>
   </div>
+  <h2 style="color: white;text-align: center;">Recommended Products</h2>
   <div class="home-container4">
     <div class={`${styles['product-container']}`}>
       {recommendedProducts.slice(0, 4).map((product) => (
@@ -219,7 +270,7 @@ const recommendedProducts = shuffledProductsInSameCategory.slice(0, 4);
               </div>
             <img
               alt="image"
-              src={ 'https://play.teleporthq.io/static/svg/default-img.svg'}
+              src={product.product_image ? product.product_image : 'https://i.imgur.com/O01kM4S.jpg'}
               class={styles['product-image']}
             />
             <div class={styles['brand-div']}>
@@ -236,6 +287,7 @@ const recommendedProducts = shuffledProductsInSameCategory.slice(0, 4);
               <span class={styles['type']}>Product Type:</span>
               <span class={styles['type-name']}>{findMostParentCategory(product.category_id)}</span>
             </div>
+            
             
           </div>
         </a>

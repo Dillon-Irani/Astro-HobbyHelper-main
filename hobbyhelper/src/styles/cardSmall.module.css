@@ -32,13 +32,13 @@
   }
   @keyframes buzz {
     0% {
-      box-shadow: 5px 5px 10px 0px #e0ec83;
+      box-shadow: 5px 5px 10px 0px  #9290C3;
     }
     50% {
-      box-shadow: 5px 5px 15px 0px #646a3e; /* Adjust brightness as needed */
+      box-shadow: 5px 5px 15px 0px #535C91; /* Adjust brightness as needed */
     }
     100% {
-      box-shadow: 5px 5px 10px 0px #e0ec83;
+      box-shadow: 5px 5px 10px 0px  #9290C3;
     }
   }
   
@@ -49,8 +49,8 @@
     display: flex;
     padding: 5px;
     align-self: center;
-    background-color: aliceblue;
-    box-shadow: 5px 5px 10px 0px #aec17d;
+    background-color: rgb(75, 85, 117);
+    color: white;
     align-items: center;
     border-color: rgba(0, 0, 0, 0.99);
     border-style: double;
