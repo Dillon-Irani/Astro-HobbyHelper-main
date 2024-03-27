@@ -90,6 +90,7 @@
     object-fit: cover;
   }
   .brand-div {
+    
     width: 100%;
     height: 37px;
     display: flex;
@@ -100,6 +101,7 @@
   .brand {
     font-style: normal;
     font-weight: 700;
+    font-size: 15px;
   }
   .brand-name {
     padding-left: var(--dl-space-space-unit);

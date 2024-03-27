@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { XataClient } from '.././xata';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import styles from '../styles/cardSmall.module.css';
 const xata = new XataClient({
   apiKey: import.meta.env.XATA_API_KEY,
   branch: import.meta.env.XATA_BRANCH
@@ -14,39 +15,79 @@ const { records: products } = await xata.db.product.getPaginated({
     size: 50,
   },
 });
+const { records: categories } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 50,
+  },
+});
+const { records: product_configuration } = await xata.db.product_configuration.getPaginated({
+  pagination: {
+    size: 50,
+  },
+});
+const findMostParentCategory = (categoryId) => {
+  const productCategory = categories.find((category) => category.product_category_id === categoryId);
 
+  if (productCategory) {
+    // If the category has a parent, recursively find the parent category
+    if (productCategory.parent_category_id) {
+      return findMostParentCategory(productCategory.parent_category_id);
+    } else {
+      // If there is no parent, return the category name
+      return productCategory.category_name;
+    }
+  }
+
+  // Return a default value if category is not found
+  return 'Category not available';
+};
+const findProductPrice = (productId) => {
+  const productPriceConfig = product_configuration.find(config => config.product_item_id === productId);
+  return productPriceConfig ? productPriceConfig.price : 'Price not available';
+};
 // Create page objects dynamically for each product
 const pages = products.map(product => ({
   slug: `Products/${product.product_id}`,
   title: product.product_name,
-  text: product.description,
+  description: product.description,
+  brand: product.product_brand,
+  type: findMostParentCategory(product.category_id),
+  category:categories.find(
+                (category) => category.product_category_id === product.category_id
+              )?.category_name || 'Category not available',
+  priceDisplay: findProductPrice(product.product_id),
 }));
-
-// Add other static pages if needed
-pages.push(
-  {
-    slug: "404",
-    title: ':(',
-    text: 'Welcome to Failure!',
-  },
-  {
-    slug: 'cart',
-    title: 'Astro products',
-    text: 'We have lots of products for you',
-  }
-);
 
 const { slug } = Astro.params;
 const page = pages.find((page) => page.slug === slug);
 if (!page) return Astro.redirect("/404");
-const { title, text } = page;
+const { title, brand, description, category, priceDisplay, type } = page;
 
+
+
+// Function to shuffle an array using Fisher Yates algorithm
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+// Filter da products by their category of the current product page
+const productsInSameCategory = products.filter(product => findMostParentCategory(product.category_id) === page.type);
+
+// Shuffle the filtered products array usin ya boi Fishers algorithm
+const shuffledProductsInSameCategory = shuffleArray(productsInSameCategory);
+
+// Display a random selection of 4 products from the same category (epic win)
+const recommendedProducts = shuffledProductsInSameCategory.slice(0, 4);
 
 
 ---
 <style>
 .home-container {
   width: 100%;
+  color: white;
   display: flex;
   overflow: auto;
   min-height: 100vh;
@@ -62,6 +103,7 @@ const { title, text } = page;
   justify-content: center;
 }
 .home-container2 {
+
   width: 50%;
   height: 410px;
   display: flex;
@@ -74,6 +116,7 @@ const { title, text } = page;
   object-fit: cover;
 }
 .home-container3 {
+  
   width: 50%;
   height: 589px;
   display: flex;
@@ -83,10 +126,14 @@ const { title, text } = page;
   justify-content: flex-start;
 }
 .home-text {
+  font-size: 50px;
+  margin-top: 5cm;
   align-self: flex-start;
   padding-top: var(--dl-space-space-threeunits);
+  color: white;
 }
 .home-text03 {
+  
   align-self: flex-start;
   padding-top: var(--dl-space-space-threeunits);
 }
@@ -103,8 +150,9 @@ const { title, text } = page;
   padding-top: var(--dl-space-space-threeunits);
 }
 .home-container4 {
+
   width: 50%;
-  height: 178px;
+  height: 200px;
   display: flex;
   align-items: flex-start;
   border-color: #000000;
@@ -118,11 +166,6 @@ const { title, text } = page;
 <head>
   <title>{title}</title>
 </head>
-<body>
-  <h1>{title}</h1>
-  <p>{text}</p>
-</body>
-
 <div class="home-container">
   <div class="home-container1">
     <div class="home-container2">
@@ -134,29 +177,71 @@ const { title, text } = page;
     </div>
     <div class="home-container3">
       <span class="home-text">
-        <span>Product Name</span>
+        <span>{title}</span>
         <br />
       </span>
       <span class="home-text03">
-        <span>Brand</span>
+        <span>Brand: {brand}</span>
         <br />
       </span>
       <span class="home-text06">
-        <span>Category</span>
+        <span>Category: {category}</span>
+        <br />
+      </span>
+      <span class="home-text06">
+        <span>Product Type: {type}</span>
         <br />
       </span>
       <span class="home-text09">
-        <span>Price</span>
+        <span>Price: $ {priceDisplay}</span>
         <br />
       </span>
       <span class="home-text12">
-        <span>Description</span>
+        <span>Description: {description}</span>
         <br />
       </span>
     </div>
   </div>
-  <div class="home-container4"></div>
-</div>
+  <div class="home-container4">
+    <div class={`${styles['product-container']}`}>
+      {recommendedProducts.slice(0, 4).map((product) => (
+        <a href={"/Products/" + product.product_id} ={product.product_id}>
+          <div ={product.product_id} class={styles['product-card']}>
+            <div class={styles['title-div']}>
+              <h1 class={styles['product-name']}>{product.product_name}</h1>
+              
+            </div>
+            <div class={styles['price-div']}>
+                <span>Price Per Unit: </span>
+                <span class={styles['price']}>{`$ ${product_configuration.find(
+                  (config) => config.product_item_id === product.product_id )?.price || 'Price not available'}`}</span>
+                  
+              </div>
+            <img
+              alt="image"
+              src={ 'https://play.teleporthq.io/static/svg/default-img.svg'}
+              class={styles['product-image']}
+            />
+            <div class={styles['brand-div']}>
+              <span class={styles['brand']}>Brand:</span>
+              <span class={styles['brand-name']}>{product.product_brand}</span>
+            </div>
+            <div class={styles['category-div']}>
+              <span class={styles['category']}>Category:</span>
+              <span class={styles['category-name']}>{categories.find(
+                (category) => category.product_category_id === product.category_id
+              )?.category_name || 'Category not available'}</span>
+            </div>
+            <div class={styles['type-div']}>
+              <span class={styles['type']}>Product Type:</span>
+              <span class={styles['type-name']}>{findMostParentCategory(product.category_id)}</span>
+            </div>
+            
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
 </div>
 </body>
 

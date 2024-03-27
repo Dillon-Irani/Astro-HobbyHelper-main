@@ -1,21 +1,10 @@
-import {getUserInfo, userInfo, isLoggedIn  } from './userInformation';
-import { XataClient } from '.././xata.ts';
-export default async function Login() {
 
+import  {LoginCheck} from './LoginCheck.tsx'
+import { useEffect, useState } from 'react';
+export default function Login() {
+
+	const [mode, setMode] = useState('unset');
 	
-	const xata = new XataClient({
-			apiKey: import.meta.env.XATA_API_KEY,
-			branch: import.meta.env.XATA_BRANCH
-		  });
-		
-		  const users = await xata.db.hh_user
-          .filter({
-        	username: 'Admin',
-          })
-          .getMany().then(users => {
-			console.log(users);
-		  });
-  
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		console.log("yay");
@@ -25,12 +14,17 @@ export default async function Login() {
 		const inputPassword = String(event.target.elements.password.value);
 		
 		console.log(inputUsername, inputPassword);
+		//validate(inputUsername, inputPassword);
 		
-		userInfo.set({username:inputUsername, password:inputPassword}); 
-		
-		console.log(userInfo.get());
 	}
+
+	useEffect(() => {
+		setMode('login');
+	}, []);
+
 	
+
+	return <LoginCheck/>;
 	  return (
 		<form onSubmit={handleSubmit}>
 		  <div>
@@ -42,6 +36,8 @@ export default async function Login() {
 			<input id="password" type="password" />
 		  </div>
 		  <button type="submit">Submit</button>
+
 		</form>
+
 	  );
 	};
