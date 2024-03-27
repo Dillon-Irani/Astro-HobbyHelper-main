@@ -9,28 +9,28 @@ const xata = new XataClient({
 });
 const { records: categories } = await xata.db.product_category.getPaginated({
   pagination: {
-    size: 50
+    size: 200
   }
 
 })
 const { records: products } = await xata.db.product.getPaginated({
   pagination: {
-    size: 50,
+    size: 200,
   },
 });
 const { records: product_variation } = await xata.db.product_variation.getPaginated({
   pagination: {
-    size: 50,
+    size: 200,
   },
 });
 const { records: product_variation_option } = await xata.db.product_variation_option.getPaginated({
   pagination: {
-    size: 50,
+    size: 200,
   },
 });
 const { records: product_configuration } = await xata.db.product_configuration.getPaginated({
   pagination: {
-    size: 50,
+    size: 200,
   },
 });
 const getProducts = async (searchTerm) => {
