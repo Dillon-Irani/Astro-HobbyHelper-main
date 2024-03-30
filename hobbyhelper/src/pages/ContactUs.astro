@@ -13,25 +13,27 @@ let messageSent = false; // Add a variable to track whether the message has been
 if (Astro.request.method === "POST") {
   try {
     const data = await Astro.request.formData();
-    
-    const inputName = String(data.get("name"));
-    const inputEmail = String(data.get("email"));
-    const inputPhone = String(data.get("phone"));
-    const inputMessage = String(data.get("message"));
-    const userPhone = parseInt(inputPhone);
-    
-    const newUser = await xata.db.hh_contact_us.create({
-      name: inputName,
-      email: inputEmail,
-      phone: userPhone,
-      message: inputMessage,
-    });
+    const action = data.get('action'); // Get the value of the 'action' field
 
-    // Log the form submission (you might want to save it to a database instead)
-    console.log("Contact form submission:", messages);
+    // Check if the action is 'contactFormSubmit'
+    if (action === 'contactFormSubmit') {
+      const inputName = String(data.get("name"));
+      const inputEmail = String(data.get("email"));
+      const inputPhone = String(data.get("phone"));
+      const inputMessage = String(data.get("message"));
+      const userPhone = parseInt(inputPhone);
+      
+      const newUser = await xata.db.hh_contact_us.create({
+        name: inputName,
+        email: inputEmail,
+        phone: userPhone,
+        message: inputMessage,
+      });
 
-    // Set the messageSent variable to true
-    messageSent = true;
+      console.log("Contact form submission:", messages);
+      messageSent = true;
+    }
+
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -132,21 +134,18 @@ to {background-position: -100px 0px;background-size:2750px;}
 </style>
 
 <Layout title='Contact Us'>
- 
   {messageSent && 
-    
     <div class="confirmation-message">
-        <p class="confirmation">Message has been sent!</p>
-      </div>
-    
-    }
-    
+      <p class="confirmation">Message has been sent!</p>
+    </div>
+  }
+  
   <div class="container">
     <h2 style="text-align: center;">Contact Us</h2>
-
-    
-
     <form method="POST">
+      <!-- Add a hidden input field to specify the action -->
+      <input type="hidden" name="action" value="contactFormSubmit">
+      
       <label for="name">Name:</label>
       <input type="text" id="name" name="name" required />
 

@@ -17,38 +17,48 @@ const message = { categoryName: "" };
 if (Astro.request.method === "POST") {
   try {
     const data = await Astro.request.formData();
-    const categoryName = String(data.get("categoryName"));
-    let parentCategoryId = null;
+    const action = data.get('action');
 
-    // Get the value of "parentCategory"
-    const parentCategoryValue = data.get("parentCategory");
+    // Check if the action is for adding a category
+    if (action === 'addCategory') {
+      const categoryName = String(data.get("categoryName"));
+      let parentCategoryId = null;
 
-    // Check if the value is a string
-    if (typeof parentCategoryValue === "string") {
-      // Convert the string to an integer
-      parentCategoryId = parseInt(parentCategoryValue);
-    }
+      // Get the value of "parentCategory"
+      const parentCategoryValue = data.get("parentCategory");
 
-    // Fetch the most recent category and calculate the new product category ID
-    const { records: recentCategories } = await xata.db.product_category
-      .sort('product_category_id', 'desc')
-      .getPaginated({ pagination: { size: 1 } });
-    const newProductCategoryId = recentCategories.length > 0 ? recentCategories[0].product_category_id + 1 : 1;
+      // Check if the value is a string
+      if (typeof parentCategoryValue === "string") {
+        // Convert the string to an integer
+        parentCategoryId = parseInt(parentCategoryValue);
+      }
 
-    // Check if the category already exists
-    const existingCategory = await xata.db.product_category.filter({ category_name: categoryName }).getMany();
+      // Check if the category name is blank
+      if (!categoryName.trim()) {
+        message.error = "Category name cannot be blank.";
+      } else {
+        // Fetch the most recent category and calculate the new product category ID
+        const { records: recentCategories } = await xata.db.product_category
+          .sort('product_category_id', 'desc')
+          .getPaginated({ pagination: { size: 1 } });
+        const newProductCategoryId = recentCategories.length > 0 ? recentCategories[0].product_category_id + 1 : 1;
 
-    if (existingCategory.length > 0) {
-      // Category already exists
-      message.categoryName = "Category: " + categoryName + " already exists.";
-    } else {
-      // Create a new category
-      await xata.db.product_category.create({
-        product_category_id: newProductCategoryId,
-        category_name: categoryName,
-        parent_category_id: parentCategoryId || null
-      });
-      message.categoryName = `Category "${categoryName}" added successfully!`;
+        // Check if the category already exists
+        const existingCategory = await xata.db.product_category.filter({ category_name: categoryName }).getMany();
+
+        if (existingCategory.length > 0) {
+          // Category already exists
+          message.error = "Category: " + categoryName + " already exists.";
+        } else {
+          // Create a new category
+          await xata.db.product_category.create({
+            product_category_id: newProductCategoryId,
+            category_name: categoryName,
+            parent_category_id: parentCategoryId || null
+          });
+          message.categoryName = `Category "${categoryName}" added successfully!`;
+        }
+      }
     }
   } catch (error) {
     if (error instanceof Error) {
@@ -56,6 +66,7 @@ if (Astro.request.method === "POST") {
     }
   }
 }
+
 
 
 ---
@@ -85,33 +96,38 @@ if (Astro.request.method === "POST") {
   }
   </style>
 <Layout title='Add Category'>
-    {message.categoryName && (
-      <div class={message.categoryName.includes("successfully") ? "confirmation-message" : "error-message"}>
-        <p class="confirmation">{message.categoryName}</p>
-      </div>
-    )}
-    
-    <div class="container">
-      <h2>Add New Category</h2>
-      <form method="POST">
-        <label for="categoryName">Category Name: </label>
-        <input type="text" id="categoryName" name="categoryName" required />
-        <br>
-        <label for="parentCategory">Parent Category: </label>
-        <select id="parentCategory" name="parentCategory">
-          <option value="">Select Parent Category if applicable</option>
-          <!-- Add options dynamically here -->
-          {categories.map(category => (
-            <option value={category.product_category_id}>
-              {category.category_name}
-            
-            </option>
-            
-          ))}
-        </select>
-        <br>
-        <br>
-        <button type="submit">Add Category</button>
-      </form>
+  {message.error && (
+    <div class="error-message">
+      <p class="error">{message.error}</p>
     </div>
-  </Layout>
+  )}
+
+  {message.categoryName && (
+    <div class={message.categoryName.includes("successfully") ? "confirmation-message" : "error-message"}>
+      <p class="confirmation">{message.categoryName}</p>
+    </div>
+  )}
+
+  <div class="container">
+    <h2>Add New Category</h2>
+    <form method="POST">
+      <input type="hidden" name="action" value="addCategory">
+      <label for="categoryName">Category Name: </label>
+      <input type="text" id="categoryName" name="categoryName" required />
+      <br>
+      <label for="parentCategory">Parent Category: </label>
+      <select id="parentCategory" name="parentCategory">
+        <option value="">Select Parent Category if applicable</option>
+        <!-- Add options dynamically here -->
+        {categories.map(category => (
+          <option value={category.product_category_id}>
+            {category.category_name}
+          </option>
+        ))}
+      </select>
+      <br>
+      <br>
+      <button type="submit">Add Category</button>
+    </form>
+  </div>
+</Layout>

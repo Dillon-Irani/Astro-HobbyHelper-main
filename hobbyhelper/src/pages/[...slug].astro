@@ -169,7 +169,7 @@ if (productConfiguration && productConfiguration.variation_option_id) {
   max-width: 100%;
 }
 .home-container3 {
-  
+  padding-left: 25px;
   width: 50%;
   height: 589px;
   display: flex;
@@ -208,14 +208,13 @@ if (productConfiguration && productConfiguration.variation_option_id) {
   margin-left: 5px; 
 }
 .home-container4 {
-
   width: 50%;
-  
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   border-color: #ffffff;
   border-style: dashed;
   border-width: 2px;
+  overflow: hidden; /* Add this line */
 }
 .cartButton {
   background-color: #13aa52;
@@ -331,7 +330,9 @@ if (productConfiguration && productConfiguration.variation_option_id) {
       </span>
     </div>
   </div>
-  <h2 style="color: white;text-align: center; ">Recommended Products</h2>
+  <div style="display: flex; justify-content: center;">
+    <h2 style="color: white; max-width: 100%; overflow-wrap: break-word;">Recommended Products</h2>
+  </div>
   <div class="home-container4">
     <div class={`${styles['product-container']}`}>
       {recommendedProducts.slice(0, 4).map((product) => (

@@ -3,14 +3,13 @@ import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from './userInforma
 
 if (Astro.request.method === "POST") {
   try {
+    console.log("test1");
     const data = await Astro.request.formData();
-    const logoutButtonClicked = data.has('logout');
-
-    if (logoutButtonClicked) {
+    const action = data.get('action');
+    if (action === 'logout') {
       clearUserInfo();
       return Astro.redirect('/HobbyHome');
     }
-
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -48,7 +47,8 @@ if (Astro.request.method === "POST") {
     text-align: center;
   }
 </style>
-<form method="POST">
-  <button type="submit" name="logout">Sign Out</button>
 
+<form method="POST">
+  <input type="hidden" name="action" value="logout">
+  <button type="submit">Sign Out</button>
 </form>
