@@ -200,6 +200,11 @@ if (productConfiguration && productConfiguration.variation_option_id) {
 .home-text12 {
   align-self: flex-start;
   padding-top: var(--dl-space-space-threeunits);
+  display: flex;
+  align-items: center;
+}
+.qty-display {
+  margin-left: 5px; 
 }
 .home-container4 {
 
@@ -243,8 +248,15 @@ if (productConfiguration && productConfiguration.variation_option_id) {
     padding: 10px 30px;
   }
 }
+.cartButton:disabled {
+  background-color: #454b47;
+  border: 1px solid #ff0101;
+  box-shadow: rgba(0, 0, 0, .15) 0 3px 9px 0;
+  transform: translateY(-2px);
+}
 
 </style>
+
 <Layout title={title} >
 <html>
 <head>
@@ -269,9 +281,8 @@ if (productConfiguration && productConfiguration.variation_option_id) {
         <br />
       </span>
       <span class="home-text12">
-        <span>In stock: {qtyDisplay}</span>
-        <br />
-        <br />
+        <span>In stock:</span>
+        <p class="qty-display">{qtyDisplay}</p>
       </span>
       <span class="home-text03">
         <span>Brand: {brand}</span>
@@ -296,8 +307,25 @@ if (productConfiguration && productConfiguration.variation_option_id) {
       <span class="home-text12">
         <span>
           <br /> 
-          <button class="cartButton" role="button">Add to Cart</button>
-          <button class="cartButton" role="button">Reserve in Store</button>
+          <script is:inline>
+            // JavaScript logic to disable buttons if quantity is zero
+            document.addEventListener("DOMContentLoaded", function() {
+              const qtyDisplayValueElement = document.querySelector('.home-text12 p');
+              const qtyDisplayValue = parseInt(qtyDisplayValueElement.textContent.trim(), 10);
+              console.log("Qty Display:", qtyDisplayValue);
+              const addToCartButton = document.querySelector('.cartButton:nth-of-type(1)');
+              const reserveButton = document.querySelector('.cartButton:nth-of-type(2)');
+              console.log("Add to Cart Button:", addToCartButton);
+              console.log("Reserve Button:", reserveButton);
+              
+              if (qtyDisplayValue === 0) {
+                addToCartButton.disabled = true;
+                reserveButton.disabled = true;
+              }
+            });
+          </script>
+          <button class="cartButton" role="button" >Add to Cart</button>
+          <button class="cartButton" role="button" >Reserve in Store</button>
         </span>
       </span>
     </div>

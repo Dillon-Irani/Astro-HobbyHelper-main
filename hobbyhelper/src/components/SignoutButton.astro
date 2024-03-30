@@ -18,7 +18,37 @@ if (Astro.request.method === "POST") {
   }
 }
 ---
+<style>
 
+
+
+  button {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+  .confirmation {
+    color: white;
+  }
+
+  .error-message {
+    background-color: red;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 1px;
+    text-align: center;
+  }
+</style>
 <form method="POST">
   <button type="submit" name="logout">Sign Out</button>
+
 </form>

@@ -109,7 +109,7 @@ const filteredCategoryProducts = selectedCategory ? productsInSameCategory : pro
       </div>
       <div class={`${styles['product-container']}`}>
         {products
-          .filter(product => !selectedCategory || findMostParentCategory(product.category_id) === selectedCategory)
+          
           .map(product => (
             <a href={"/Products/" + product.product_id}>
               <div ={product.product_id} class={styles['product-card']}>
