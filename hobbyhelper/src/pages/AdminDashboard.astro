@@ -1,0 +1,31 @@
+---
+import Layout from '../layouts/Layout.astro';
+import styles from '../styles/adminDashboard.module.css';
+
+
+import { XataClient } from '.././xata';
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+const { records } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 50
+  }
+})
+---
+
+    <Layout title="Admin Dashboard">
+        <div class={styles.container}>
+          <h1 class={styles.title}>Welcome to the Admin Dashboard</h1>
+          <div class={styles.buttonContainer}>
+            <a href="/AddCategory" class={styles.button}>Add Category</a>
+            <a href="/add-product-variation" class={styles.button}>Add Product Variation</a>
+            <a href="/add-product" class={styles.button}>Add Product</a>
+            <a href="/manage-users" class={styles.button}>Manage Users</a>
+          </div>
+        </div>
+     
+
+  
+</Layout>

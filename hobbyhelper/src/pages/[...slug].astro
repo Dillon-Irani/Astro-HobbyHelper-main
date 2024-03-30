@@ -166,6 +166,7 @@ if (productConfiguration && productConfiguration.variation_option_id) {
   
   height: 414px;
   object-fit: fit;
+  max-width: 100%;
 }
 .home-container3 {
   
@@ -330,7 +331,7 @@ if (productConfiguration && productConfiguration.variation_option_id) {
       </span>
     </div>
   </div>
-  <h2 style="color: white;text-align: center;">Recommended Products</h2>
+  <h2 style="color: white;text-align: center; ">Recommended Products</h2>
   <div class="home-container4">
     <div class={`${styles['product-container']}`}>
       {recommendedProducts.slice(0, 4).map((product) => (

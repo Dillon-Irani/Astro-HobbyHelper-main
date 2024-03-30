@@ -1,5 +1,7 @@
 ---
 import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from './userInformation';
+// Check if the user is logged in and their user type is admin
+const isAdmin = isLoggedIn.get() && userInfo.get().userType === 'admin';
 ---
 <style>
   a.nav-link {
@@ -24,6 +26,11 @@ import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from './userInforma
     // Render links when the user is logged in
     <>
       <a class="nav-link" href="/Profile/">Profile</a>
+      {isAdmin && (
+          <>
+            <a class="nav-link" href="/AdminDashboard/">Admin Dashboard</a>
+          </>
+        )}
     </>
   ) : (
     // Render links when the user is not logged in

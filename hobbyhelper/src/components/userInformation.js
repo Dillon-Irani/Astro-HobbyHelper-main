@@ -1,6 +1,7 @@
 import { atom, map } from 'nanostores';
 
 export const isLoggedIn = atom(false);
+export const isAdmin = atom(false);
 
 /**
  * @typedef {Object} userInfo
@@ -14,7 +15,7 @@ export const userInfo = map({});
 
 export function setUserInfo({ id, username, userType }) {
   userInfo.set({ id, username, userType });
-  
+
 }
 
 export function getUserInfo() {

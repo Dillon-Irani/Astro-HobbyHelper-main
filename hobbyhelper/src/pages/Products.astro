@@ -33,15 +33,53 @@ const { records: product_configuration } = await xata.db.product_configuration.g
     size: 200,
   },
 });
-const searchQuery = Astro.params.search;
-console.log('Search term:', searchQuery);
+const searchQuery = Astro.request.url;
 
-if (searchQuery) {
-  console.log('Search term:', searchQuery);
+let filteredProducts = [];
+
+
+
+// Function to check if a category is in the category hierarchy
+const isInCategoryHierarchy = (categoryId, productCategoryId) => {
+  if (categoryId === productCategoryId) {
+    return true; // If the product's category matches the provided category, return true
+  }
+  const category = categories.find(cat => cat.product_category_id === productCategoryId);
+  if (!category || !category.parent_category_id) {
+    return false; // If the category doesn't exist or has no parent, return false
+  }
+  return isInCategoryHierarchy(categoryId, category.parent_category_id); // Recursively check parent categories
+};
+
+// Filter products 
+if (searchQuery.includes("search=")) {
+  const startIndex = searchQuery.indexOf("search=") + 7;
+  let searchTerm = searchQuery.slice(startIndex);
+  searchTerm = decodeURIComponent(searchTerm.replace(/\+/g, ' ')); // Replace "%20" with " "
+  console.log('Search term:', searchTerm);
+
+  if (searchTerm.startsWith("Category")) {
+    // Extract the category ID from the search term
+    const categoryId = parseInt(searchTerm.slice(8), 10);
+    console.log('Search term:', categoryId); // Remove "Category" prefix
+    filteredProducts = products.filter(product => {
+      return isInCategoryHierarchy(categoryId, product.category_id);
+    });
+  } else {
+    // Filter by product search term or category name or description
+    filteredProducts = products.filter(product => {
+      const productNameMatch = product.product_name.toLowerCase().includes(searchTerm.toLowerCase());
+      const descriptionMatch = product.description.toLowerCase().includes(searchTerm.toLowerCase()); // Check if description contains search term
+      const categoryMatch = categories.some(category => {
+        return isInCategoryHierarchy(category.product_category_id, product.category_id) && category.category_name.toLowerCase().includes(searchTerm.toLowerCase());
+      });
+      return productNameMatch || descriptionMatch || categoryMatch;
+    });
+  }
 } else {
+  filteredProducts = products;
   console.log('No search term provided.');
 }
-
 
 
 
@@ -68,30 +106,105 @@ const findMostParentCategory = (categoryId) => {
 // Extract the search query from Astro.params
 
 
-// Define selectedCategory variable
-let selectedCategory = null;
-
-// Filter products by their category of the current product page
-const productsInSameCategory = products.filter(product => findMostParentCategory(product.category_id) === selectedCategory);
-
-const filteredCategoryProducts = selectedCategory ? productsInSameCategory : products;
 
 
 
 ---
+<style>
+  .button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.5s ease;
+    margin-bottom: 15px;
+    border-style: double;
+    border-width: 1px;
+    border-radius: var(--dl-radius-radius-radius8);
+  
+  
+    animation: buzz 10s infinite; /* Adjust the duration as needed */
+  }
+  
+  .button:hover {
+    background-color: #0056b3;
+  }
+  .all-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #2fa038;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.5s ease;
+    margin-bottom: 20px;
+    border-style: double;
+    border-width: 1px;
+    border-radius: var(--dl-radius-radius-radius8);
+    animation: buzz 10s infinite; /* Adjust the duration as needed */
+  }
+  .all-button:hover {
+    background-color: #0f3d0b;
+  }
+  .filter-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #9ea02f;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.5s ease;
+    border-style: double;
+    border-width: 1px;
+    border-radius: var(--dl-radius-radius-radius8);
+    animation: buzz 10s infinite; /* Adjust the duration as needed */
+  }
+  
+  .filter-button:hover {
+    background-color: #3c3d0b;
+  }
+  
+  
+  .dropdown-container {
+      display: none; /* Initially hide the dropdown container */
+      
+    }
 
+    .show {
+      display: block; /* Show the dropdown container */
+      margin-bottom: 15px;
+    }
+
+    @keyframes buzz {
+  0% {
+    box-shadow: 5px 5px 10px 0px  #9290C3;
+  }
+  50% {
+    box-shadow: 5px 5px 15px 0px #535C91; /* Adjust brightness as needed */
+  }
+  100% {
+    box-shadow: 5px 5px 10px 0px  #9290C3;
+  }
+  
+}
+</style>
 <Layout title="Products">
   <script is:inline>
-    // Define selectedCategory variable
-    let selectedCategory = null;
-  
-    // Function to filter products by category
-    const filterProductsByCategory = (categoryId) => {
-      selectedCategory = categoryId;
-      console.log('Filter products by category id:', categoryId);
-      
-    };
-  
+    function searchByCategory(categoryId) {
+      // Perform the search and redirect
+    
+      window.location.href = `/Products?search=Category${encodeURIComponent(categoryId)}`;
+  }
+      function goToProductsPage() {
+    window.location.href = "/Products"; // Redirect to the products page
+  }
+  function toggleDropdown() {
+      const dropdownContainer = document.getElementById('dropdown-container');
+      dropdownContainer.classList.toggle('show'); // Toggle the 'show' class to show/hide the dropdown container
+    }
+    
   </script>
   <main>
     
@@ -99,59 +212,65 @@ const filteredCategoryProducts = selectedCategory ? productsInSameCategory : pro
       
       <h2 style="color: white; text-align: center; padding: 15px;">Inventory Page</h2>
       <div style="text-align: center; margin-bottom: 20px;">
-        <button onclick="filterProductsByCategory(null)">All</button> <!-- Button to show all products -->
-        <!-- Create buttons for each category -->
-        {categories.map(category => (
-          <button onclick={`filterProductsByCategory('${category.product_category_id}')`}>
-            {category.category_name}
-          </button>
-        ))}
-      </div>
-      <div class={`${styles['product-container']}`}>
-        {products
-          
-          .map(product => (
-            <a href={"/Products/" + product.product_id}>
-              <div ={product.product_id} class={styles['product-card']}>
-              <div class={styles['title-div']}>
-                <h1 class={styles['product-name']}>{product.product_name}</h1>
-                <div class={styles['price-div']}>
-                  <span>Price Per Unit: </span>
-                  <span class={styles['price']}>{`$ ${product_configuration.find(
-                    (config) => config.product_item_id === product.product_id )?.price || 'Price not available'}`}</span>
-                </div>
-              </div>
-              <img
-                alt="image"
-                src={product.product_image ? product.product_image : 'https://i.imgur.com/O01kM4S.jpg'}
-                class={styles['product-image']}
-              />
-              <div class={styles['brand-div']}>
-                <span class={styles['brand']}>Brand:</span>
-                <span class={styles['brand-name']}>{product.product_brand}</span>
-              </div>
-              <div class={styles['category-div']}>
-                <span class={styles['category']}>Category:</span>
-                <span class={styles['category-name']}>{categories.find(
-                  (category) => category.product_category_id === product.category_id
-                )?.category_name || 'Category not available'}</span>
-              </div>
-              <div class={styles['type-div']}>
-                <span class={styles['type']}>Product Type:</span>
-                <span class={styles['type-name']}>{findMostParentCategory(product.category_id)}</span>
-              </div>
-              <div class={styles['description-div']}>
-                <span class={styles['description']}>Description:</span>
-                <span class={styles['description-text']}>{product.description}</span>
-              </div>
-            </div>
-          </a>
-        ))}
         
-      </div>
-      <div style="text-align: center;">
-        <button onclick="loadMoreProducts()">Load More Products</button>
-      </div>
+        <!-- Button to toggle visibility of the category dropdown menu -->
+        <button class="filter-button" onclick="toggleDropdown()">Filter</button>
+        <!-- Dropdown container -->
+        <button class="all-button" onclick="goToProductsPage()">All</button>
+        <div id="dropdown-container" class="dropdown-container">
+          <!-- Create buttons for each category -->
+          {categories.map(category => (
+            <button class="button" onclick={`searchByCategory('${category.product_category_id}')`}>
+              {category.category_name}
+            </button>
+          ))}
+        </div>
+        <div class={`${styles['product-container']}`}>
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map(product => (
+              <a href={"/Products/" + product.product_id}>
+                <div ={product.product_id} class={styles['product-card']}>
+                  <div class={styles['title-div']}>
+                    <h1 class={styles['product-name']}>{product.product_name}</h1>
+                    <div class={styles['price-div']}>
+                      <span>Price Per Unit: </span>
+                      <span class={styles['price']}>{`$ ${product_configuration.find(
+                        (config) => config.product_item_id === product.product_id )?.price || 'Price not available'}`}</span>
+                    </div>
+                  </div>
+                  <img
+                    alt="image"
+                    src={product.product_image ? product.product_image : 'https://i.imgur.com/O01kM4S.jpg'}
+                    class={styles['product-image']}
+                  />
+                  <div class={styles['brand-div']}>
+                    <span class={styles['brand']}>Brand:</span>
+                    <span class={styles['brand-name']}>{product.product_brand}</span>
+                  </div>
+                  <div class={styles['category-div']}>
+                    <span class={styles['category']}>Category:</span>
+                    <span class={styles['category-name']}>{categories.find(
+                      (category) => category.product_category_id === product.category_id
+                    )?.category_name || 'Category not available'}</span>
+                  </div>
+                  <div class={styles['type-div']}>
+                    <span class={styles['type']}>Product Type:</span>
+                    <span class={styles['type-name']}>{findMostParentCategory(product.category_id)}</span>
+                  </div>
+                  <div class={styles['description-div']}>
+                    <span class={styles['description']}>Description:</span>
+                    <span class={styles['description-text']}>{product.description}</span>
+                  </div>
+                </div>
+              </a>
+            ))
+          ) : (
+            <h2 style="text-align: center; color: rgb(255, 0, 0); margin-bottom: 20px;">
+              No products found.
+            </h2>
+          )}
+        </div>
+      
     </div>
   </main>
   
