@@ -211,6 +211,38 @@ if (productConfiguration && productConfiguration.variation_option_id) {
   border-style: dashed;
   border-width: 2px;
 }
+.cartButton {
+  background-color: #13aa52;
+  border: 1px solid #13aa52;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, .1) 0 2px 4px 0;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  font-family: "Akzidenz Grotesk BQ Medium", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  outline: none;
+  outline: 0;
+  padding: 10px 25px;
+  text-align: center;
+  transform: translateY(0);
+  transition: transform 150ms, box-shadow 150ms;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  margin-right: 10px;
+}
+.cartButton:hover {
+  box-shadow: rgba(0, 0, 0, .15) 0 3px 9px 0;
+  transform: translateY(-2px);
+}
+
+@media (min-width: 768px) {
+  .cartButton {
+    padding: 10px 30px;
+  }
+}
 
 </style>
 <Layout title={title} >
@@ -232,6 +264,15 @@ if (productConfiguration && productConfiguration.variation_option_id) {
         <span>{title}</span>
         <br />
       </span>
+      <span class="home-text09">
+        <span>Price: $ {priceDisplay}</span>
+        <br />
+      </span>
+      <span class="home-text12">
+        <span>In stock: {qtyDisplay}</span>
+        <br />
+        <br />
+      </span>
       <span class="home-text03">
         <span>Brand: {brand}</span>
         <br />
@@ -244,10 +285,6 @@ if (productConfiguration && productConfiguration.variation_option_id) {
         <span>Product Type: {type}</span>
         <br />
       </span>
-      <span class="home-text09">
-        <span>Price: $ {priceDisplay}</span>
-        <br />
-      </span>
       <span class="home-text12">
         <span>Description: {description}</span>
         <br />
@@ -257,8 +294,11 @@ if (productConfiguration && productConfiguration.variation_option_id) {
         <br />
       </span>
       <span class="home-text12">
-        <span>In stock: {qtyDisplay}</span>
-        <br />
+        <span>
+          <br /> 
+          <button class="cartButton" role="button">Add to Cart</button>
+          <button class="cartButton" role="button">Reserve in Store</button>
+        </span>
       </span>
     </div>
   </div>
