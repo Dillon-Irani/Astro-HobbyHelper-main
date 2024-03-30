@@ -61,6 +61,11 @@ const findProductPrice = (productId) => {
   const productPriceConfig = product_configuration.find(config => config.product_item_id === productId);
   return productPriceConfig ? productPriceConfig.price : 'Price not available';
 };
+// Return the number of products in stock
+const findProductQty = (productId) => {
+  const productQtyConfig = product_configuration.find(config => config.product_item_id === productId);
+  return productQtyConfig ? productQtyConfig.qty_in_stock : "Not in stock";
+};
 // Create page objects dynamically for each product
 const pages = products.map(product => ({
   slug: `Products/${product.product_id}`,
@@ -74,13 +79,14 @@ const pages = products.map(product => ({
                 (category) => category.product_category_id === product.category_id
               )?.category_name || 'Category not available',
   priceDisplay: findProductPrice(product.product_id),
+  qtyDisplay: findProductQty(product.product_id),
 }));
 // Add other static pages if needed
 
 const { slug } = Astro.params;
 const page = pages.find((page) => page.slug === slug);
 if (!page) return Astro.redirect("/HobbyHome");
-const { title, brand, description, category, priceDisplay, type, img } = page;
+const { title, brand, description, category, priceDisplay, type, img, qtyDisplay } = page;
 
 
 
@@ -92,7 +98,7 @@ function shuffleArray(array) {
   }
   return array;
 }
-// Filter da products by their category of the current product page
+// Filter the products by their category of the current product page
 const productsInSameCategory = products.filter(product => findMostParentCategory(product.category_id) === page.type);
 
 // Shuffle the filtered products array usin ya boi Fishers algorithm
@@ -248,6 +254,10 @@ if (productConfiguration && productConfiguration.variation_option_id) {
       </span>
       <span class="home-text06">
         <span>{variationName}: {variationOptionValue}</span>
+        <br />
+      </span>
+      <span class="home-text12">
+        <span>In stock: {qtyDisplay}</span>
         <br />
       </span>
     </div>
