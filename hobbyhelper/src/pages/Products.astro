@@ -33,17 +33,20 @@ const { records: product_configuration } = await xata.db.product_configuration.g
     size: 200,
   },
 });
-const getProducts = async (searchTerm) => {
-  const response = await fetch(`/api/products?search=${encodeURIComponent(searchTerm)}`);
-  const data = await response.json();
-  return data;
-};
-// Extract search query from the URL
-const url = import.meta.env.SSR ? 'https://your-website-url.com/' : location.href;
-const searchParams = new URLSearchParams(new URL(url).search);
-const searchTerm = searchParams.get('search');
+const searchQuery = Astro.params.search;
+console.log('Search term:', searchQuery);
 
-const filteredProducts = searchTerm ? getProducts(searchTerm) : [];
+if (searchQuery) {
+  console.log('Search term:', searchQuery);
+} else {
+  console.log('No search term provided.');
+}
+
+
+
+
+
+
 
 // Function to find the most parent category name
 const findMostParentCategory = (categoryId) => {
@@ -64,78 +67,94 @@ const findMostParentCategory = (categoryId) => {
 };
 // Extract the search query from Astro.params
 
-const searchQuery = Astro.params?.search;
-console.log('Search term:', decodeURIComponent(searchQuery));
-// Check if the search query exists
-if (searchQuery) {
-  // The URL includes a search query
-  console.log('Search term:', decodeURIComponent(searchQuery));
-} else {
-  // The URL does not include a search query
-  console.log('No search term provided.');
-}
+
+// Define selectedCategory variable
+let selectedCategory = null;
+
+// Filter products by their category of the current product page
+const productsInSameCategory = products.filter(product => findMostParentCategory(product.category_id) === selectedCategory);
+
+const filteredCategoryProducts = selectedCategory ? productsInSameCategory : products;
+
+
+
 ---
 
 <Layout title="Products">
+  <script is:inline>
+    // Define selectedCategory variable
+    let selectedCategory = null;
   
-	<main>
-		
-		<div>
+    // Function to filter products by category
+    const filterProductsByCategory = (categoryId) => {
+      selectedCategory = categoryId;
+      console.log('Filter products by category id:', categoryId);
       
-			<h2 style="color: white; text-align: center; padding: 15px;">Inventory Page</h2>
-			<div style="text-align: center; margin-bottom: 20px;">
-        <button onclick="setFilteredProducts(null)">All</button> <!-- Button to show all products -->
+    };
+  
+  </script>
+  <main>
+    
+    <div>
+      
+      <h2 style="color: white; text-align: center; padding: 15px;">Inventory Page</h2>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <button onclick="filterProductsByCategory(null)">All</button> <!-- Button to show all products -->
         <!-- Create buttons for each category -->
         {categories.map(category => (
-            <button onclick="filterProducts($,{category,product_category_id})">{category.category_name}</button>
+          <button onclick={`filterProductsByCategory('${category.product_category_id}')`}>
+            {category.category_name}
+          </button>
         ))}
-    </div>
+      </div>
       <div class={`${styles['product-container']}`}>
-				
-				{products.map((product) => (
-          <a href={"/Products/" + product.product_id}>
-				  <div ={product.product_id} class={styles['product-card']}>
-          <div class={styles['title-div']}>
-            <h1 class={styles['product-name']}>{product.product_name}</h1>
-            <div class={styles['price-div']}>
-              <span>Price Per Unit: </span>
-              <span class={styles['price']}>{`$ ${product_configuration.find(
-                (config) => config.product_item_id === product.product_id )?.price || 'Price not available'}`}</span>
-            </div>
-          </div>
-          <img
+        {products
+          .filter(product => !selectedCategory || findMostParentCategory(product.category_id) === selectedCategory)
+          .map(product => (
+            <a href={"/Products/" + product.product_id}>
+              <div ={product.product_id} class={styles['product-card']}>
+              <div class={styles['title-div']}>
+                <h1 class={styles['product-name']}>{product.product_name}</h1>
+                <div class={styles['price-div']}>
+                  <span>Price Per Unit: </span>
+                  <span class={styles['price']}>{`$ ${product_configuration.find(
+                    (config) => config.product_item_id === product.product_id )?.price || 'Price not available'}`}</span>
+                </div>
+              </div>
+              <img
                 alt="image"
                 src={product.product_image ? product.product_image : 'https://i.imgur.com/O01kM4S.jpg'}
                 class={styles['product-image']}
               />
-          <div class={styles['brand-div']}>
-            <span class={styles['brand']}>Brand:</span>
-            <span class={styles['brand-name']}>{product.product_brand}</span>
-          </div>
-          <div class={styles['category-div']}>
-            <span class={styles['category']}>Category:</span>
-            <span class={styles['category-name']}>{categories.find(
-            (category) => category.product_category_id === product.category_id
-          )?.category_name || 'Category not available'}</span>
-          </div>
-          <div class={styles['type-div']}>
-            <span class={styles['type']}>Product Type:</span>
-            <span class={styles['type-name']}>{findMostParentCategory(product.category_id)}</span>
-          </div>
-          <div class={styles['description-div']}>
-            <span class={styles['description']}>Description:</span>
-            <span class={styles['description-text']}>{product.description}</span>
-          </div>
-        </div>
-      </a>
-      ))}
-      
+              <div class={styles['brand-div']}>
+                <span class={styles['brand']}>Brand:</span>
+                <span class={styles['brand-name']}>{product.product_brand}</span>
+              </div>
+              <div class={styles['category-div']}>
+                <span class={styles['category']}>Category:</span>
+                <span class={styles['category-name']}>{categories.find(
+                  (category) => category.product_category_id === product.category_id
+                )?.category_name || 'Category not available'}</span>
+              </div>
+              <div class={styles['type-div']}>
+                <span class={styles['type']}>Product Type:</span>
+                <span class={styles['type-name']}>{findMostParentCategory(product.category_id)}</span>
+              </div>
+              <div class={styles['description-div']}>
+                <span class={styles['description']}>Description:</span>
+                <span class={styles['description-text']}>{product.description}</span>
+              </div>
+            </div>
+          </a>
+        ))}
+        
+      </div>
+      <div style="text-align: center;">
+        <button onclick="loadMoreProducts()">Load More Products</button>
+      </div>
     </div>
-		<div style="text-align: center;">
-      <button onclick="loadMoreProducts()">Load More Products</button>
-  </div>
-	</main>
-	
+  </main>
+  
 </Layout>
 
 
