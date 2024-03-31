@@ -80,7 +80,7 @@ const isAdmin = isLoggedIn.get() && userInfo.get().userType === 'admin';
     padding-bottom: 15px;
     background-color: #1B1A55;
     margin-right: 10px;
-    z-index: 1;
+    z-index: -1;
     text-align: left;
     border-style: double;
     border-width: 1px;
@@ -93,6 +93,7 @@ const isAdmin = isLoggedIn.get() && userInfo.get().userType === 'admin';
   .nav-links.active {
     display: flex;
     opacity: 1; /* Change opacity to 1 when active */
+    z-index: 0;
   }
 
   .nav-link {
