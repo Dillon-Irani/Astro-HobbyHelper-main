@@ -1,42 +1,175 @@
 ---
 import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from './userInformation';
+import Logo from '../images/Hobby-Helper-clean.gif';
 // Check if the user is logged in and their user type is admin
 const isAdmin = isLoggedIn.get() && userInfo.get().userType === 'admin';
 ---
 <style>
-  a.nav-link {
-    text-decoration: none;
-    color: #FFFFFF !important; /* White Text */
-    margin: 0 15px;
+  /* Basic styling */
+  @keyframes buzz {
+  0% {
+    box-shadow: 5px 5px 10px 0px  #3e3d53;
+  }
+  50% {
+    box-shadow: 5px 5px 15px 0px #535C91; /* Adjust brightness as needed */
+  }
+  100% {
+    box-shadow: 5px 5px 10px 0px  #3e3d53;
+  }
+}
+  body {
+    margin: 0;
     font-family: 'Roboto', sans-serif;
   }
+
+  nav {
+    background-color: #535C91;
+    color: #fff;
+    padding: 15px 10px;
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-style: double;
+    border-width: 1px;
+    border-radius: var(--dl-radius-radius-radius8);
+    flex-direction: column;
+    justify-content: flex-start;
+    border-radius: 25px;
+  
+    animation: buzz 10s infinite; /* Adjust the duration as needed */
+    
+  }
+
+  .nav-links {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    text-align: center;
+    font-family: "Akzidenz Grotesk BQ Medium", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 18px;
+    
+    
+    
+  }
+
+  .nav-link {
+    text-decoration: none;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 10px;
+  }
+
+  .nav-link:hover {
+    background-color: #fff;
+    padding: 1px 10px;
+    color: #555;
+  }
+
+/* Mobile styles */
+@media screen and (max-width: 1236px) {
+  .nav-links {
+    
+    flex-direction: column;
+    position: absolute;
+    top: 0px;
+    left: 0;
+    right: 0;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    background-color: #1B1A55;
+    margin-right: 10px;
+    z-index: 1;
+    text-align: left;
+    border-style: double;
+    border-width: 1px;
+    text-align: center;
+    animation: buzz 10s infinite;
+    opacity: 0; /* Start with 0 opacity */
+    transition: opacity 0.7s ease; /* Add transition for opacity */
+  }
+
+  .nav-links.active {
+    display: flex;
+    opacity: 1; /* Change opacity to 1 when active */
+  }
+
+  .nav-link {
+    padding: 1px 10px;
+  }
+}
+
+  /* Button styles */
+  #menu-toggle {
+    display: none;
+    z-index: 2;
+  }
+
+  @media screen and (max-width: 1236px) {
+    #menu-toggle {
+      display: block;
+      background-color: transparent;
+      color: #fff;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+    }
+  }
+  .menu-image {
+  height: 180px;
+  display: none;
+  position: absolute; /* Position the image absolutely */
+  max-width: 40%; /* Position it to the left */
+  top: 50%; /* Center vertically */
+  transform: translateY(-50%); /* Adjust for vertical centering */
+  opacity: 0; /* Initially hidden */
+  transition: opacity 0.5s ease; /* Smooth transition */
+}
+
+.menu-image.active {
+  display: block;
+  opacity: 1; /* Show the image when the menu is active */
+}
+  
 </style>
 
 
 
 <nav>
-  <a class="nav-link" href="/">REACT DEMO</a>
-  <a class="nav-link" href="/HobbyHome/">Hobby Home</a>
-  <a class="nav-link" href="/Products/">Products</a>
-  <a class="nav-link" href="/BacklogBuilder/">Backlog Builder</a>
-  <a class="nav-link" href="/ContactUs/">Contact Us</a>
-  <a class="nav-link" href="/RequestProduct/">Request Products</a>
-
-  {isLoggedIn.get() ? (
-    // Render links when the user is logged in
-    <>
-      <a class="nav-link" href="/Profile/">Profile</a>
-      {isAdmin && (
-          <>
-            <a class="nav-link" href="/AdminDashboard/">Admin Dashboard</a>
-          </>
+  
+  <button id="menu-toggle">&#9776;</button> <!-- Menu toggle button -->
+  
+  <ul class="nav-links">
+    <img src={Logo.src} alt="Menu Image" class="menu-image">
+    <li><a href="/HobbyHome/" class="nav-link">Hobby Home</a></li>
+    <li><a href="/Products/" class="nav-link">Products</a></li>
+    <li><a href="/BacklogBuilder/" class="nav-link">Backlog Builder</a></li>
+    <li><a href="/ContactUs/" class="nav-link">Contact Us</a></li>
+    <li><a href="/RequestProduct/" class="nav-link">Request Products</a></li>
+    {isLoggedIn.get() ? (
+      <>
+        <li><a href="/Profile/" class="nav-link">Profile</a></li>
+        {isAdmin && (
+          <li><a href="/AdminDashboard/" class="nav-link">Admin Dashboard</a></li>
         )}
-    </>
-  ) : (
-    // Render links when the user is not logged in
-    <>
-      <a class="nav-link" href="/SignIn/">Sign In</a>
-      <a class="nav-link" href="/Register/">Register</a>
-    </>
-  )}
+      </>
+    ) : (
+      <>
+        <li><a href="/SignIn/" class="nav-link">Sign In</a></li>
+        <li><a href="/Register/" class="nav-link">Register</a></li>
+      </>
+    )}
+  </ul>
 </nav>
+
+<script>
+  const menuToggle = document.getElementById('menu-toggle');
+  const navLinks = document.querySelector('.nav-links');
+  const menuImage = document.querySelector('.menu-image');
+
+  menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+    menuImage.classList.toggle('active');
+  });
+</script>

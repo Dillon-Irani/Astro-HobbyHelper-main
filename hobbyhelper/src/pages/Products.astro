@@ -33,11 +33,11 @@ const { records: product_configuration } = await xata.db.product_configuration.g
     size: 200,
   },
 });
+
+
 const searchQuery = Astro.request.url;
 
 let filteredProducts = [];
-
-
 
 // Function to check if a category is in the category hierarchy
 const isInCategoryHierarchy = (categoryId, productCategoryId) => {
@@ -70,10 +70,11 @@ if (searchQuery.includes("search=")) {
     filteredProducts = products.filter(product => {
       const productNameMatch = product.product_name.toLowerCase().includes(searchTerm.toLowerCase());
       const descriptionMatch = product.description.toLowerCase().includes(searchTerm.toLowerCase()); // Check if description contains search term
+      const brandMatch = product.product_brand.toLowerCase().includes(searchTerm.toLowerCase());
       const categoryMatch = categories.some(category => {
         return isInCategoryHierarchy(category.product_category_id, product.category_id) && category.category_name.toLowerCase().includes(searchTerm.toLowerCase());
       });
-      return productNameMatch || descriptionMatch || categoryMatch;
+      return productNameMatch || descriptionMatch || brandMatch || categoryMatch;
     });
   }
 } else {

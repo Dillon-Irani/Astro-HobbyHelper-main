@@ -1,21 +1,7 @@
 ---
 import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from './userInformation.js';
 
-if (Astro.request.method === "POST") {
-  try {
-    console.log("test1");
-    const data = await Astro.request.formData();
-    const action = data.get('action');
-    if (action === 'logout') {
-      clearUserInfo();
-      return Astro.redirect('/HobbyHome');
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message);
-    }
-  }
-}
+
 ---
 <style>
 
@@ -32,6 +18,18 @@ if (Astro.request.method === "POST") {
 
   button:hover {
     background-color: #45a049;
+  }
+  .no-button {
+    background-color: #af4c4c;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .no-button:hover {
+    background-color: #a04545;
   }
 
   .confirmation {
@@ -52,3 +50,5 @@ if (Astro.request.method === "POST") {
   <input type="hidden" name="action" value="logout">
   <button type="submit">Sign Out</button>
 </form>
+<br/>
+<button class="no-button" onclick="window.location.href='/HobbyHome'">Nah, ill stay!</button>

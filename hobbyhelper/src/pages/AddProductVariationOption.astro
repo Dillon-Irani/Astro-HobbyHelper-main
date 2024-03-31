@@ -1,0 +1,189 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { XataClient } from '../xata';
+
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+const { records: product_variation_option } = await xata.db.product_variation_option.getPaginated({
+  pagination: {
+    size: 200
+  }
+
+})
+const { records: product_variation } = await xata.db.product_variation.getPaginated({
+  pagination: {
+    size: 200
+  }
+
+})
+interface Message {
+  variationName: string;
+  error?: string;
+}
+const message: Message = { variationName: "" };
+
+if (Astro.request.method === "POST") {
+  try {
+    const data = await Astro.request.formData();
+    const action = data.get('action');
+
+    // Check if the action is for adding a variation
+    if (action === 'addvariation') {
+      const variationName = String(data.get("variationName"));
+      let parentVariationId = null;
+
+      // Get the value of "parentVariation"
+      const parentVariationValue = data.get("parentvariation_option");
+
+      // Check if the value is a string
+      if (typeof parentVariationValue === "string") {
+        // Convert the string to an integer
+        parentVariationId = parseInt(parentVariationValue);
+      }
+
+      // Check if the variation name is blank
+      if (!variationName.trim()) {
+        message.error = "Variation name cannot be blank.";
+      } else {
+        // Fetch the most recent variation option and calculate the new product variation option ID
+        const { records: recentVariations } = await xata.db.product_variation_option
+          .sort('variation_option_id', 'desc')
+          .getPaginated({ pagination: { size: 1 } });
+        const newProductVariationOptionId = recentVariations.length > 0 ? recentVariations[0].variation_option_id + 1 : 1;
+
+        // Check if the variation option already exists
+        const existingVariation = await xata.db.product_variation_option.filter({ value: variationName }).getMany();
+
+        if (existingVariation.length > 0) {
+          // Variation option already exists
+          message.error = "Variation option: " + variationName + " already exists.";
+        } else {
+          // Create a new variation option
+          await xata.db.product_variation_option.create({
+            variation_option_id: newProductVariationOptionId,
+            value: variationName,
+            product_variation_id: parentVariationId || null
+          });
+          message.variationName = `Variation option "${variationName}" added successfully!`;
+        }
+      }
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+}
+---
+
+<style>
+  .confirmation-message {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px; 
+    margin-bottom: 15px; 
+    text-align: center;
+  }
+
+  .error-message {
+    background-color: red;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px; 
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    color: #fff;
+  }
+
+  .container {
+    background-color: #535C91;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .container h2 {
+    text-align: center; /* Center the heading */
+    color: #070F2B;
+  }
+
+  form {
+    margin-top: 20px; /* Add some space between heading and form */
+  }
+
+  label {
+    font-weight: bold;
+    margin-bottom: 5px; /* Add some space below each label */
+    display: block; /* Make labels block elements */
+  }
+
+  input,
+  select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 10px; /* Add some space below each input/select */
+  }
+
+  button {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%; /* Make the button full-width */
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+</style>
+<Layout title='Add variation'>
+  {message.error && (
+    <div class="error-message">
+      <p class="error">{message.error}</p>
+    </div>
+  )}
+
+  {message.variationName && (
+    <div class={message.variationName.includes("successfully") ? "confirmation-message" : "error-message"}>
+      <p class="confirmation">{message.variationName}</p>
+    </div>
+  )}
+
+  <div class="container">
+    <h2>Add New Variation</h2>
+    <form method="POST">
+      <input type="hidden" name="action" value="addvariation">
+      <label for="variationName">Variation Option Value: </label>
+      <input type="text" id="variationName" name="variationName" required />
+
+      <select id="parentvariation_option" name="parentvariation_option">
+        <option value="">Select Variation</option>
+        <!-- Add options dynamically here -->
+        {product_variation.map(variation => (
+          <option value={variation.product_variation_id}>
+            {variation.name}
+          </option>
+        ))}
+      </select>
+      <button type="submit">Add Variation</button>
+    </form>
+  </div>
+</Layout>

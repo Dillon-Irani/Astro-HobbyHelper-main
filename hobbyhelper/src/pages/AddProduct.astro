@@ -1,0 +1,277 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { XataClient } from '../xata';
+
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+
+const { records: productCategories } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: variationOptions } = await xata.db.product_variation_option.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+
+interface Message {
+  productName: string;
+  productBrand: string;
+  categoryId: number;
+  description: string;
+  productImage: string;
+  qtyInStock: number;
+  price: number;
+  error?: string;
+}
+
+const message: Message = {
+  productName: "",
+  productBrand: "",
+  categoryId: -1,
+  description: "",
+  productImage: "",
+  qtyInStock: 0,
+  price: 0,
+};
+
+if (Astro.request.method === "POST") {
+  try {
+    const data = await Astro.request.formData();
+    const action = data.get('action');
+
+    if (action === 'addProduct') {
+      const productName = String(data.get("productName"));
+      const productBrand = String(data.get("productBrand"));
+      const categoryId = parseInt(data.get("categoryId"));
+      const variationOptionId = parseInt(data.get("variationOptionId"));
+      const description = String(data.get("description"));
+      const productImage = String(data.get("productImage"));
+      const qtyInStock = parseInt(data.get("qtyInStock"));
+      const price = parseFloat(data.get("price"));
+
+      if (!productName.trim() || !productBrand.trim() || categoryId === -1 || !description.trim() || !productImage.trim() || isNaN(qtyInStock) || isNaN(price)) {
+        message.error = "All fields are required and quantity in stock and price should be valid numbers.";
+      } else {
+        const { records: recentProducts } = await xata.db.product.sort('product_id', 'desc').getPaginated({ pagination: { size: 1 } });
+        const newProductId = recentProducts.length > 0 ? recentProducts[0].product_id + 1 : 1;
+
+        await xata.db.product.create({
+          product_id: newProductId,
+          product_name: productName,
+          product_brand: productBrand,
+          category_id: categoryId,
+          description: description,
+          product_image: productImage,
+        });
+
+        const { records: recentConfigurations } = await xata.db.product_configuration.sort('product_item_id', 'desc').getPaginated({ pagination: { size: 1 } });
+        
+
+        await xata.db.product_configuration.create({
+          product_item_id: newProductId,
+          variation_option_id: variationOptionId,
+          qty_in_stock: qtyInStock,
+          price: price,
+        });
+
+        message.productName = `Product "${productName}" added successfully!`;
+      }
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+}
+---
+<style>
+    .confirmation-message {
+    color: white;
+  }
+  .confirmation-message {
+    background-color: #4CAF50; /* Green background */
+    color: #fff; /* White text */
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+    margin-bottom: 15px; 
+    text-align: center;
+  }
+
+  .error-message {
+    background-color: red;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+    margin-bottom: 15px; 
+    text-align: center;
+  }
+    body {
+      font-family: Arial, sans-serif;
+      color:  #fff; 
+    }
+  
+    .form-container {
+      background-color: #535C91; 
+      border-radius: 8px; /* Rounded corners */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow effect */
+      padding: 20px;
+      max-width: 500px; /* Limit width for better readability */
+      margin: 0 auto; /* Center the form horizontally */
+    }
+  
+    .form-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  
+    .form-header h2 {
+      margin-top: 0;
+      color: #070F2B; /* Green color for headers */
+    }
+  
+    .form-group {
+      margin-bottom: 15px;
+    }
+  
+    .form-group label {
+      display: block;
+      font-weight: bold;
+    }
+  
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc; /* Light gray border */
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+  
+    .form-group select {
+      
+      background-position: right 10px top 50%;
+      background-size: 20px;
+      padding-right: 40px; /* Space for dropdown arrow */
+    }
+  
+    .form-group textarea {
+      height: 100px; /* Set a fixed height for textarea */
+      max-width: 100%;
+    }
+  
+    .form-group button {
+      background-color: #4CAF50; /* Green background for button */
+      color: #fff; /* White text color */
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+    }
+  
+    .form-group button:hover {
+      background-color: #45a049; /* Darker green on hover */
+    }
+    .imgur-button {
+        background-color: #be17e8; /* Pink color */
+        color: #fff; /* White text color */
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-bottom: 15px;
+    }
+
+    .imgur-button:hover {
+        background-color: #d937f1; /* Lighter pink on hover */
+    }
+
+  </style>
+  
+  <Layout title="Add Product">
+    {message.error && (
+        <div class="error-message">
+          <p class="error">{message.error}</p>
+        </div>
+      )}
+    
+      {message.productName && (
+        <div class={message.productName.includes("successfully") ? "confirmation-message" : "error-message"}>
+          <p class="confirmation">{message.productName}</p>
+        </div>
+      )}
+    <div class="form-container">
+      <div class="form-header">
+        <h2>Add New Product</h2>
+      </div>
+      <form method="POST">
+        <input type="hidden" name="action" value="addProduct">
+  
+        <div class="form-group">
+          <label for="productName">Product Name:</label>
+          <input type="text" id="productName" name="productName" required>
+        </div>
+  
+        <div class="form-group">
+          <label for="productBrand">Product Brand:</label>
+          <input type="text" id="productBrand" name="productBrand" required>
+        </div>
+  
+        <div class="form-group">
+          <label for="categoryId">Category:</label>
+          <select id="categoryId" name="categoryId" required>
+            <option value="-1">Select Category</option>
+            {productCategories.map(category => (
+            <option value={category.product_category_id}>{category.category_name}</option>
+            ))}
+          </select>
+        </div>
+  
+        <div class="form-group">
+          <label for="variationOptionId">Variation Option:</label>
+          <select id="variationOptionId" name="variationOptionId" required>
+            <option value="-1">Select Variation Option</option>
+            {variationOptions.map(option => (
+            <option value={option.variation_option_id}>{option.value}</option>
+            ))}
+          </select>
+        </div>
+  
+        <div class="form-group">
+          <label for="description">Description:</label>
+          <textarea id="description" name="description" required></textarea>
+        </div>
+  
+        <div class="form-group">
+          <label for="productImage">Product Image URL:</label>
+          <input type="text" id="productImage" name="productImage" required>
+          
+        </div>
+        <button class='imgur-button' type="button" onclick="window.open('https://imgur.com/a/6O7RMNs', '_blank')" style="width: 100%;">Imgur Collection</button>
+        <div class="form-group">
+          <label for="qtyInStock">Quantity in Stock:</label>
+          <input type="number" id="qtyInStock" name="qtyInStock" required>
+        </div>
+  
+        <div class="form-group">
+          <label for="price">Price:</label>
+          <input type="number" id="price" name="price" step="0.01" required>
+        </div>
+  
+        <div class="form-group">
+          <button type="submit">Add Product</button>
+        </div>
+      </form>
+    </div>
+  </Layout>
