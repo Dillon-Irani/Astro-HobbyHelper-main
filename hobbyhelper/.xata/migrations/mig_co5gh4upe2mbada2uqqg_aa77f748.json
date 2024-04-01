@@ -1,0 +1,102 @@
+{
+  "id": "mig_co5gh4upe2mbada2uqqg",
+  "parentID": "mig_co52d3upe2mbada2ul40",
+  "checksum": "1:aa77f748a868efce18883413bea6f3e97121859011b4c9bafb30760847d5f234",
+  "operations": [
+    {
+      "addTable": {
+        "table": "events"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "event_id",
+          "type": "int"
+        },
+        "table": "events"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "event_type",
+          "type": "string"
+        },
+        "table": "events"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "tickets_remaining",
+          "type": "int"
+        },
+        "table": "events"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "event_price",
+          "type": "string"
+        },
+        "table": "events"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "event_attendee_user_id",
+          "type": "int"
+        },
+        "table": "events"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "event_description",
+          "type": "string"
+        },
+        "table": "events"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "event_date",
+          "type": "datetime"
+        },
+        "table": "events"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "event_start_time",
+          "type": "datetime"
+        },
+        "table": "events"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "event_end_time",
+          "type": "datetime"
+        },
+        "table": "events"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "event_img",
+          "type": "string"
+        },
+        "table": "events"
+      }
+    }
+  ]
+}

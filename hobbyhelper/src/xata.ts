@@ -98,6 +98,29 @@ const tables = [
       { name: "backlog_product_qty", type: "int" },
     ],
   },
+  {
+    name: "events",
+    columns: [
+      { name: "event_id", type: "int" },
+      { name: "event_type", type: "string" },
+      { name: "tickets_remaining", type: "int" },
+      { name: "event_price", type: "string" },
+      { name: "event_attendee_user_id", type: "int" },
+      { name: "event_description", type: "string" },
+      { name: "event_date", type: "datetime" },
+      { name: "event_start_time", type: "datetime" },
+      { name: "event_end_time", type: "datetime" },
+      { name: "event_img", type: "string" },
+      { name: "is_available", type: "bool" },
+    ],
+  },
+  {
+    name: "requests",
+    columns: [
+      { name: "request_description", type: "string" },
+      { name: "date_requested", type: "datetime" },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
@@ -130,6 +153,12 @@ export type ReservationsRecord = Reservations & XataRecord;
 export type Backlog = InferredTypes["backlog"];
 export type BacklogRecord = Backlog & XataRecord;
 
+export type Events = InferredTypes["events"];
+export type EventsRecord = Events & XataRecord;
+
+export type Requests = InferredTypes["requests"];
+export type RequestsRecord = Requests & XataRecord;
+
 export type DatabaseSchema = {
   product_category: ProductCategoryRecord;
   product: ProductRecord;
@@ -140,6 +169,8 @@ export type DatabaseSchema = {
   hh_contact_us: HhContactUsRecord;
   reservations: ReservationsRecord;
   backlog: BacklogRecord;
+  events: EventsRecord;
+  requests: RequestsRecord;
 };
 
 const DatabaseClient = buildClient();

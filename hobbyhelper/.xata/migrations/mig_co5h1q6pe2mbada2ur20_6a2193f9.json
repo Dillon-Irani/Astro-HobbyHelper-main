@@ -1,0 +1,13 @@
+{
+  "id": "mig_co5h1q6pe2mbada2ur20",
+  "parentID": "mig_co5gmnupe2mbada2uqt0",
+  "checksum": "1:6a2193f9923ad3a6de91a62326bfcdf01805d1d9860de006f8a016ee22199795",
+  "operations": [
+    {
+      "removeColumn": {
+        "column": "request_id",
+        "table": "requests"
+      }
+    }
+  ]
+}

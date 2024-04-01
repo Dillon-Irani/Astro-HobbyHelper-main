@@ -1,0 +1,48 @@
+{
+  "id": "mig_co5gmnupe2mbada2uqt0",
+  "parentID": "mig_co5gj16pe2mbada2uqrg",
+  "checksum": "1:f166e22402ecf762ab72aa5b581f64ea20a49344136517718aa4ba4a9098ea1a",
+  "operations": [
+    {
+      "addTable": {
+        "table": "requests"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "request_id",
+          "type": "int"
+        },
+        "table": "requests"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "request_user_id",
+          "type": "int"
+        },
+        "table": "requests"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "request_description",
+          "type": "string"
+        },
+        "table": "requests"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "date_requested",
+          "type": "datetime"
+        },
+        "table": "requests"
+      }
+    }
+  ]
+}

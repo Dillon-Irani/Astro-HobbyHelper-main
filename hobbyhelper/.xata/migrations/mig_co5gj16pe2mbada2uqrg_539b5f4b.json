@@ -1,0 +1,16 @@
+{
+  "id": "mig_co5gj16pe2mbada2uqrg",
+  "parentID": "mig_co5gh4upe2mbada2uqqg",
+  "checksum": "1:539b5f4bb070c47ea78ab842882208a86502dda5cdc5a1da5febf9a0e1560e8f",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "is_available",
+          "type": "bool"
+        },
+        "table": "events"
+      }
+    }
+  ]
+}
