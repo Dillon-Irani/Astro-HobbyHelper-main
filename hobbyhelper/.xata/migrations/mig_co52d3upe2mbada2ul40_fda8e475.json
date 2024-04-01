@@ -1,0 +1,48 @@
+{
+  "id": "mig_co52d3upe2mbada2ul40",
+  "parentID": "mig_co4o10hue7a71jh4ert0",
+  "checksum": "1:fda8e47560bb32aa26188bdb8fd727066859388e19514ec5956256a0c8892e38",
+  "operations": [
+    {
+      "addTable": {
+        "table": "backlog"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "backlog_id",
+          "type": "int"
+        },
+        "table": "backlog"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "user_id",
+          "type": "int"
+        },
+        "table": "backlog"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "product_id",
+          "type": "int"
+        },
+        "table": "backlog"
+      }
+    },
+    {
+      "addColumn": {
+        "column": {
+          "name": "backlog_product_qty",
+          "type": "int"
+        },
+        "table": "backlog"
+      }
+    }
+  ]
+}

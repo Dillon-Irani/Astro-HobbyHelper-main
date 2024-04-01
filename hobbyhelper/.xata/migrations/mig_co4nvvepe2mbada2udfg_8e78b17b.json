@@ -1,0 +1,17 @@
+{
+  "id": "mig_co4nvvepe2mbada2udfg",
+  "parentID": "mig_co4nviupe2mbada2udeg",
+  "checksum": "1:8e78b17bfc011f44c2cacae9a245bc77d45c611a06efaee7e1aab7480b6e853b",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "reservation_id",
+          "type": "int",
+          "unique": true
+        },
+        "table": "reservations"
+      }
+    }
+  ]
+}

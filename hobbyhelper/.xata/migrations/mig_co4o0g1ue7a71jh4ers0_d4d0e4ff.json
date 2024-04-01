@@ -1,0 +1,18 @@
+{
+  "id": "mig_co4o0g1ue7a71jh4ers0",
+  "parentID": "mig_co4o0a6pe2mbada2udgg",
+  "checksum": "1:d4d0e4ff42a64a28a0471b623d28d4bc5b6dd6047859f2e5be4d858e06eaee1d",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "product_item_id",
+          "type": "int",
+          "notNull": true,
+          "defaultValue": "0"
+        },
+        "table": "reservations"
+      }
+    }
+  ]
+}

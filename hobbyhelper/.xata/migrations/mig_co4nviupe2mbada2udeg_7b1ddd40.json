@@ -1,0 +1,12 @@
+{
+  "id": "mig_co4nviupe2mbada2udeg",
+  "parentID": "mig_cnfd2mdlmsl85qi2n9f0",
+  "checksum": "1:7b1ddd402b76eda66456df9906eea11a6d186fcbebe7ca2cda5183fce38c91a4",
+  "operations": [
+    {
+      "addTable": {
+        "table": "reservations"
+      }
+    }
+  ]
+}

@@ -73,6 +73,31 @@ const tables = [
       { name: "message", type: "string" },
     ],
   },
+  {
+    name: "reservations",
+    columns: [
+      { name: "reservation_id", type: "int", unique: true },
+      { name: "user_id", type: "int" },
+      {
+        name: "product_item_id",
+        type: "int",
+        notNull: true,
+        defaultValue: "0",
+      },
+      { name: "number_reserved", type: "int" },
+      { name: "is_ready", type: "bool", defaultValue: "false" },
+      { name: "date_picked_up", type: "datetime" },
+    ],
+  },
+  {
+    name: "backlog",
+    columns: [
+      { name: "backlog_id", type: "int" },
+      { name: "user_id", type: "int" },
+      { name: "product_id", type: "int" },
+      { name: "backlog_product_qty", type: "int" },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
@@ -99,6 +124,12 @@ export type HhUserRecord = HhUser & XataRecord;
 export type HhContactUs = InferredTypes["hh_contact_us"];
 export type HhContactUsRecord = HhContactUs & XataRecord;
 
+export type Reservations = InferredTypes["reservations"];
+export type ReservationsRecord = Reservations & XataRecord;
+
+export type Backlog = InferredTypes["backlog"];
+export type BacklogRecord = Backlog & XataRecord;
+
 export type DatabaseSchema = {
   product_category: ProductCategoryRecord;
   product: ProductRecord;
@@ -107,6 +138,8 @@ export type DatabaseSchema = {
   product_configuration: ProductConfigurationRecord;
   hh_user: HhUserRecord;
   hh_contact_us: HhContactUsRecord;
+  reservations: ReservationsRecord;
+  backlog: BacklogRecord;
 };
 
 const DatabaseClient = buildClient();

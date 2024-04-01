@@ -1,0 +1,16 @@
+{
+  "id": "mig_co4o10hue7a71jh4ert0",
+  "parentID": "mig_co4o0q6pe2mbada2udig",
+  "checksum": "1:41e5503804e2d1a6c916bffd64628d58b9a6ecf562f62a0f2ab5863ab488b670",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "date_picked_up",
+          "type": "datetime"
+        },
+        "table": "reservations"
+      }
+    }
+  ]
+}
