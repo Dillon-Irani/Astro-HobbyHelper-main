@@ -1,0 +1,34 @@
+---
+import Layout from '../layouts/Layout.astro';
+import styles from '../styles/adminDashboard.module.css';
+import { XataClient } from '../xata';
+import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from '../components/userInformation';
+// Redirect to hobby home page if not logged in
+const loggedIn = isLoggedIn.get();
+if (!loggedIn) {
+  return Astro.redirect('/HobbyHome'); 
+};
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+const { records } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 50
+  }
+})
+---
+
+    <Layout title="User Dashboard">
+        <div class={styles.container}>
+          <h1 class={styles.title}>Welcome to the User Dashboard</h1>
+          <div class={styles.buttonContainer}>
+            <a href="/MyBacklog" class={styles.button}>My Backlog</a>
+            <a href="/Profile" class={styles.button}>My Profile</a>
+            <a href="/RequestProduct" class={styles.button}>Request Product</a>
+          </div>
+        </div>
+     
+
+  
+</Layout>

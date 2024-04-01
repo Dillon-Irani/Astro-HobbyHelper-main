@@ -70,11 +70,7 @@ const signedInUserId = parseInt(userInfo.get().id);
 const filteredBacklogs = backlogRecords.filter(backlog => backlog.user_id === signedInUserId);
 const productIdsInBacklog = filteredBacklogs.map(backlog => backlog.product_id);
 const filteredProducts = products.filter(product => productIdsInBacklog.includes(product.product_id));
-console.log(filteredBacklogs);
 
-console.log(productIdsInBacklog);
-
-console.log(filteredProducts);
 // Calculate total cost and total number of items
 const totalCost = filteredBacklogs.reduce((total, backlog) => {
   const product = filteredProducts.find(product => product.product_id === backlog.product_id);
@@ -86,6 +82,13 @@ const totalCost = filteredBacklogs.reduce((total, backlog) => {
 }, 0);
 
 const totalItems = filteredBacklogs.reduce((total, backlog) => total + backlog.backlog_product_qty, 0);
+
+
+
+
+
+
+
 ---
 <style>
 @keyframes flash-glow {
@@ -98,6 +101,14 @@ const totalItems = filteredBacklogs.reduce((total, backlog) => total + backlog.b
   animation: flash-glow 10s infinite;
 }
 </style>
+<script is:inline>
+
+  function deleteBacklog(backlogId) {
+    window.location.href = `/ConfirmDeleteBacklogItem?delete=${backlogId}`;
+
+  };
+  </script>
+
 <Layout title='My Backlog '>
       <main>
         <div>
@@ -154,6 +165,11 @@ const totalItems = filteredBacklogs.reduce((total, backlog) => total + backlog.b
                         <span class={styles['brand-name']}>{`x ${backlogRecords.find(
                             (config) => config.product_id === product.product_id )?.backlog_product_qty || 'QTY not available'}`}</span>
                       </div>
+                     
+                      <a>
+                        <button class={styles['delete-button']} type="button" onclick={`deleteBacklog(${backlogRecords.find(config => config.product_id === product.product_id && config.user_id === userInfo.get().id)?.backlog_id})`}>Delete</button>
+                      </a>
+                        
                     </div>
                   </a>
                 ))

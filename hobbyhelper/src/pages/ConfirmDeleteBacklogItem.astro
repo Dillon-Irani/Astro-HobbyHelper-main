@@ -1,0 +1,171 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SignoutButton from '../components/SignoutButton.astro';
+import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from '../components/userInformation.js';
+import { XataClient } from '../xata.js';
+// Redirect to hobby home page if not logged in 
+const loggedIn = isLoggedIn.get();
+if (!loggedIn) {
+  return Astro.redirect('/HobbyHome'); 
+};
+
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+const { records } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 50
+  }
+})
+const { records: backlogRecords } = await xata.db.backlog.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+
+
+if (Astro.request.method === "POST") {
+  try {
+    const searchQuery = Astro.request.url;
+    if (searchQuery.includes("delete=")) {
+  const startIndex = searchQuery.indexOf("delete=") + 7;
+  let deleteId = parseInt(searchQuery.slice(startIndex), 10);
+  console.log(deleteId);
+  const backlogToDelete = await xata.db.backlog.filter({
+  backlog_id: deleteId
+}).getMany();
+
+if (backlogToDelete.length > 0) {
+        const backlogItem = backlogToDelete[0]; // Assuming only one item is retrieved
+        const newQty = backlogItem.backlog_product_qty - 1;
+        
+        if (newQty === 0) {
+          // Delete the backlog item if the new quantity will be 0
+          await xata.db.backlog.delete(backlogToDelete);
+          console.log(`Backlog item with ID ${deleteId} has been deleted successfully.`);
+          return Astro.redirect('/MyBacklog');
+        } else if (newQty > 0) {
+          // Update the quantity of the backlog item if the new quantity is greater than 0
+          const backlogIdToUpdate = backlogToDelete[0].id;
+          await xata.db.backlog.update(backlogIdToUpdate, { backlog_product_qty: newQty });
+          console.log(`Quantity of backlog item with ID ${deleteId} has been updated to ${newQty}.`);
+          return Astro.redirect('/MyBacklog');
+        } else {
+          console.log(`Invalid quantity for backlog item with ID ${deleteId}.`);
+        }
+      } else {
+        console.log(`Backlog item with ID ${deleteId} not found.`);
+      }
+    
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+}
+
+---  
+
+<style>
+  body {
+    background-image: url("../images/background2.gif");
+    font-family: Arial, sans-serif;
+    background-size: cover;
+  }
+
+  .container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    display: flex;
+    overflow: auto;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #6d7ab7;
+  }
+  button {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+  .delete-button {
+    background-color: #af4c4c;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .delete-button:hover {
+    background-color: #a04545;
+  }
+
+  .confirmation {
+    color: white;
+  }
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+
+  button {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+  .confirmation {
+    color: white;
+  }
+
+  .error-message {
+    background-color: red;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 1px;
+    text-align: center;
+  }
+</style>
+
+
+<Layout title='Confirm Backlog Item Delete'>
+
+  <div class="background"></div>
+
+  <div class="container">
+    <h2 style="text-align: center; color:white">Confirm Backlog Item Delete?</h2>
+    
+    <form method="POST">
+        <input type="hidden" name="action" value="logout">
+        <button class="delete-button"type="submit">Delete Item</button>
+      </form>
+      <br/>
+      <button class="button" onclick="window.location.href='/MyBacklog'">Nah, ill keep it!</button>
+    
+ 
+</Layout>
+
+

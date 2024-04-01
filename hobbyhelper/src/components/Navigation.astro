@@ -150,7 +150,7 @@ const isAdmin = isLoggedIn.get() && userInfo.get().userType === 'admin';
     <li><a href="/RequestProduct/" class="nav-link">Request Products</a></li>
     {isLoggedIn.get() ? (
       <>
-        <li><a href="/Profile/" class="nav-link">Profile</a></li>
+        <li><a href="/UserDashboard/" class="nav-link">User Dashboard</a></li>
         {isAdmin && (
           <li><a href="/AdminDashboard/" class="nav-link">Admin Dashboard</a></li>
         )}
