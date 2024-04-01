@@ -1,7 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { XataClient } from '../xata';
-
+import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from '../components/userInformation';
+// Redirect to hobby home page if not admin 
+const isAdmin = isLoggedIn.get() && userInfo.get().userType === 'admin';
+if (!isAdmin) {
+  return Astro.redirect('/HobbyHome'); 
+};
 const xata = new XataClient({
   apiKey: import.meta.env.XATA_API_KEY,
   branch: import.meta.env.XATA_BRANCH

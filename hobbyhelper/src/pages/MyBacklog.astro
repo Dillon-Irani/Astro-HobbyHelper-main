@@ -1,0 +1,172 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+import styles from '../styles/cardBacklog.module.css'
+import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from '../components/userInformation';
+
+import { XataClient } from '../xata';
+// Redirect to hobby home page if not logged in 
+const loggedIn = isLoggedIn.get();
+if (!loggedIn) {
+  return Astro.redirect('/HobbyHome'); 
+};
+
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+
+const { records: products } = await xata.db.product.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: backlogRecords } = await xata.db.backlog.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: product_variation } = await xata.db.product_variation.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: product_variation_option } = await xata.db.product_variation_option.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: product_configuration } = await xata.db.product_configuration.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: categories } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+// Function to find the most parent category name
+const findMostParentCategory = (categoryId) => {
+  const productCategory = categories.find((category) => category.product_category_id === categoryId);
+
+  if (productCategory) {
+    // If the category has a parent, recursively find the parent category
+    if (productCategory.parent_category_id) {
+      return findMostParentCategory(productCategory.parent_category_id);
+    } else {
+      // If there is no parent, return the category name
+      return productCategory.category_name;
+    }
+  }
+
+  // Return a default value if category is not found
+  return 'Category not available';
+};
+
+
+const signedInUserId = parseInt(userInfo.get().id);
+
+const filteredBacklogs = backlogRecords.filter(backlog => backlog.user_id === signedInUserId);
+const productIdsInBacklog = filteredBacklogs.map(backlog => backlog.product_id);
+const filteredProducts = products.filter(product => productIdsInBacklog.includes(product.product_id));
+console.log(filteredBacklogs);
+
+console.log(productIdsInBacklog);
+
+console.log(filteredProducts);
+// Calculate total cost and total number of items
+const totalCost = filteredBacklogs.reduce((total, backlog) => {
+  const product = filteredProducts.find(product => product.product_id === backlog.product_id);
+  const productConfig = product_configuration.find(config => config.product_item_id === backlog.product_id);
+  if (product && productConfig) {
+    total += productConfig.price * backlog.backlog_product_qty;
+  }
+  return total;
+}, 0);
+
+const totalItems = filteredBacklogs.reduce((total, backlog) => total + backlog.backlog_product_qty, 0);
+---
+<style>
+@keyframes flash-glow {
+  0% { color: rgb(0, 0, 0); text-shadow: 0 0 20px rgb(115, 113, 175); }
+  50% { color: rgb(45, 64, 99); text-shadow: 0 0 20px rgb(51, 38, 128); }
+  100% { color: rgb(0, 0, 0); text-shadow: 0 0 20px rgb(115, 113, 175); }
+}
+
+.flash-text {
+  animation: flash-glow 10s infinite;
+}
+</style>
+<Layout title='My Backlog '>
+      <main>
+        <div>
+          <h2 style="color: white; text-align: center; font-size: 35px; display: flex; justify-content: center;">My Backlog</h2>
+          <div style="display: flex; justify-content: flex-center; padding-bottom: 50px;">
+            <div style="padding: 20px; background-color: #9290C3; border-radius: 10px; margin-bottom: 20px; width: 25%; margin: 0 auto;">
+                <h1 style="color: black; font-size: 25px; text-align: center; margin-bottom: 15px;">Your Stats:</h1>
+                <div style="border: 1px solid #fff; border-radius: 5px; padding: 15px;">
+                    <h1 style="font-size: 20px; margin-bottom: 10px;">Total Cost: <span class="flash-text" style="color: blue;">${totalCost.toFixed(2)}</span></h1>
+                    <h1 style="font-size: 20px;">Total Number of Items: <span class="flash-text" style="color: green;">{totalItems}</span></h1>
+                </div>
+            </div>
+        </div>
+          </div>
+            <div class={`${styles['product-container']}`}>
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map(product => (
+                  <a href={"/Products/" + product.product_id}>
+                    <div ={product.product_id} class={styles['product-card']}>
+                      <div class={styles['title-div']}>
+                        <h1 class={styles['product-name']}>{product.product_name}</h1>
+                        <div class={styles['price-div']}>
+                          <span>Price Per Unit: </span>
+                          <span class={styles['price']}>{`$ ${product_configuration.find(
+                            (config) => config.product_item_id === product.product_id )?.price || 'Price not available'}`}</span>
+                        </div>
+                      </div>
+                      <img
+                        alt="image"
+                        src={product.product_image ? product.product_image : 'https://i.imgur.com/O01kM4S.jpg'}
+                        class={styles['product-image']}
+                      />
+                      <div class={styles['brand-div']}>
+                        <span class={styles['brand']}>Brand:</span>
+                        <span class={styles['brand-name']}>{product.product_brand}</span>
+                      </div>
+                      <div class={styles['category-div']}>
+                        <span class={styles['category']}>Category:</span>
+                        <span class={styles['category-name']}>{categories.find(
+                          (category) => category.product_category_id === product.category_id
+                        )?.category_name || 'Category not available'}</span>
+                      </div>
+                      <div class={styles['type-div']}>
+                        <span class={styles['type']}>Product Type:</span>
+                        <span class={styles['type-name']}>{findMostParentCategory(product.category_id)}</span>
+                      </div>
+                      <div class={styles['description-div']}>
+                        <span class={styles['description']}>Description:</span>
+                        <span class={styles['description-text']}>{product.description}</span>
+                      </div>
+                      <br/>
+                      <div class={styles['brand-div']}>
+                        <span class={styles['brand']}>QTY:</span>
+                        <span class={styles['brand-name']}>{`x ${backlogRecords.find(
+                            (config) => config.product_id === product.product_id )?.backlog_product_qty || 'QTY not available'}`}</span>
+                      </div>
+                    </div>
+                  </a>
+                ))
+              ) : (
+                <h2 style="text-align: center; color: rgb(255, 0, 0); margin-bottom: 20px;">
+                  No products found.
+                </h2>
+              )}
+            </div>
+          
+        </div>
+      </main>
+
+ 
+
+</Layout>

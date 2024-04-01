@@ -1,0 +1,133 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { XataClient } from '../xata';
+
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+
+const { records: backlogRecords } = await xata.db.backlog.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: productCategories } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: variationOptions } = await xata.db.product_variation_option.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: products } = await xata.db.product.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: product_configuration } = await xata.db.product_configuration.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: users } = await xata.db.hh_user.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+
+// Calculate the aggregated data for each user
+const userData = backlogRecords.reduce((acc, record) => {
+  // Find the user name from the users table
+  const user = users.find(user => user.user_id === record.user_id);
+  const username = user ? user.username : 'Unknown';
+
+  // Calculate the number of products for each user
+  const numProducts = acc[record.user_id]?.numProducts + 1 || 1;
+
+  // Find the product configuration for the current product
+  const product = products.find(product => product.product_id === record.product_id);
+  const productConfiguration = product && product_configuration.find(config => config.product_item_id === record.product_id);
+
+  // Calculate the total cost of backlog for each user
+  const totalCost = acc[record.user_id]?.totalCost + (productConfiguration ? productConfiguration.price * record.backlog_product_qty : 0) || (productConfiguration ? productConfiguration.price * record.backlog_product_qty : 0);
+
+  // Update the accumulator with the aggregated data
+  acc[record.user_id] = { username, numProducts, totalCost };
+  return acc;
+}, {});
+
+const userDataArray = Object.values(userData);
+
+// Sort the userDataArray by username
+userDataArray.sort((a, b) => b.totalCost - a.totalCost);
+---
+
+<style>
+  .table-container {
+    max-width: 800px;
+    margin: 20px auto;
+  }
+
+  table {
+    background-color: #535C91; 
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+  .backlog-button {
+    background-color: #007bff; /* Nice blue color */
+    color: white; /* Text color */
+    padding: 10px 20px; /* Adjust padding as needed */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block; /* Ensure it spans the full width */
+    margin: 0 auto; /* Center horizontally */
+}
+
+.backlog-button:hover {
+    background-color: #0056b3; /* Darker shade of blue on hover */
+}
+
+</style>
+
+<Layout title="Backlog">
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>User Name</th>
+          <th>Number of products</th>
+          <th>Total cost of backlog</th>
+        </tr>
+      </thead>
+      <tbody>
+        {userDataArray.map(data => (
+          <tr>
+            <td>{data.username}</td>
+            <td>{data.numProducts}</td>
+            <td>{data.totalCost.toFixed(2)}</td>
+          </tr>
+        ))}
+        {userDataArray.length === 0 && (
+          <tr>
+            <td colspan="3">No backlog records available.</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+  <button class='backlog-button' onclick="window.location.href='/MyBacklog'">Go To My Backlog</button>
+</Layout>

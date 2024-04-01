@@ -4,6 +4,8 @@ import { XataClient } from '.././xata';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import styles from '../styles/cardSmall.module.css';
+import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from '../components/userInformation';
+
 const xata = new XataClient({
   apiKey: import.meta.env.XATA_API_KEY,
   branch: import.meta.env.XATA_BRANCH
@@ -35,10 +37,78 @@ const { records: product_variation_option } = await xata.db.product_variation_op
     size: 200,
   },
 });
+const { records: backlog } = await xata.db.backlog.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+
+interface Message {
+  Name: string;
+  error?: string;
+}
+const message: Message = { Name: "" };
 
 
+if (Astro.request.method === "POST") {
+  try {
+    // Extract product ID from the URL
+    const productId = parseInt(Astro.params.slug.split("/")[1]); // Extract the product ID from the URL
+    const loggedIn = isLoggedIn.get();
+    const signedInUserId = parseInt(userInfo.get().id);
+  // Fetch users sorted by user_id in descending order
+    const { records: recentBacklog } = await xata.db.backlog
+      .sort( 'backlog_id', 'desc' )
+      .getPaginated({ pagination: { size: 1 } });
 
+    // Calculate the new user_id
+    const newBacklogId = recentBacklog.length > 0 ? recentBacklog[0].backlog_id + 1 : 1;
 
+    if (loggedIn) {
+      // Check if there is an existing entry in the backlog for the same user and product
+      
+      // Find the existing backlog entry
+      const existingEntry = await xata.db.backlog
+        .filter({
+          user_id: signedInUserId,
+          product_id: productId
+        })
+        .getMany();
+
+      if (existingEntry.length > 0) {
+        // If there is an existing entry, update its quantity
+        const backlogIdToUpdate = existingEntry[0].id;
+        await xata.db.backlog.update(backlogIdToUpdate, {
+          backlog_product_qty: existingEntry[0].backlog_product_qty + 1
+        });
+
+        console.log(`Quantity updated for product with ID ${productId} in backlog for user ${signedInUserId}`);
+        message.Name = `Quantity updated for product with ID ${productId} in backlog for user ${signedInUserId}`;
+      } else {
+        // If there is no existing entry, create a new entry with qty set to 1
+        await xata.db.backlog.create({
+          backlog_id: newBacklogId,
+          user_id: signedInUserId,
+          product_id: productId,
+          backlog_product_qty: 1
+        });
+
+        console.log(`Product with ID ${productId} added to backlog for user ${signedInUserId}`);
+        message.Name = `Product with ID ${productId} added to backlog for user ${signedInUserId}`;
+      }
+
+      // You can display a success message here if needed
+    } else {
+      console.log("User is not logged in. Cannot add product to backlog.");
+      message.error = "User is not logged in. Cannot add product to backlog"
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error occurred while processing form submission:", error);
+      // You can display an error message here
+    }
+  }
+}
 
 
 
@@ -137,6 +207,25 @@ if (productConfiguration && productConfiguration.variation_option_id) {
 
 ---
 <style>
+  .confirmation-message {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px; 
+    margin-bottom: 15px; 
+    text-align: center;
+  }
+
+  .error-message {
+    background-color: red;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px; 
+    margin-bottom: 15px;
+    text-align: center;
+  }
 .home-container {
   width: 100%;
   color: white;
@@ -260,6 +349,17 @@ if (productConfiguration && productConfiguration.variation_option_id) {
 <Layout title={title} >
 <html>
 <head>
+  {message.error && (
+    <div class="error-message">
+      <p class="error">{message.error}</p>
+    </div>
+  )}
+
+  {message.Name && (
+    <div class="confirmation-message">
+      <p class="confirmation">{message.Name}</p>
+    </div>
+  )}
   <title>{title}</title>
 </head>
 <div class="home-container">
@@ -308,7 +408,6 @@ if (productConfiguration && productConfiguration.variation_option_id) {
         <span>
           <br /> 
           <script is:inline>
-            // JavaScript logic to disable buttons if quantity is zero
             document.addEventListener("DOMContentLoaded", function() {
               const qtyDisplayValueElement = document.querySelector('.home-text12 p');
               const qtyDisplayValue = parseInt(qtyDisplayValueElement.textContent.trim(), 10);
@@ -318,14 +417,22 @@ if (productConfiguration && productConfiguration.variation_option_id) {
               console.log("Add to Cart Button:", addToCartButton);
               console.log("Reserve Button:", reserveButton);
               
-              if (qtyDisplayValue === 0) {
+              // Check if user is logged in
+              const loggedIn = isLoggedIn();
+              
+              // If user is not logged in, disable the buttons
+              if (!loggedIn) {
                 addToCartButton.disabled = true;
                 reserveButton.disabled = true;
               }
             });
           </script>
+          <form method="POST">
           <button class="cartButton" role="button" >Add to Cart</button>
+          </form>
+          <br/>
           <button class="cartButton" role="button" >Reserve in Store</button>
+        
         </span>
       </span>
     </div>
