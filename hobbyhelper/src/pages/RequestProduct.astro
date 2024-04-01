@@ -134,17 +134,17 @@ to {background-position: -50px 0px;background-size:2750px;}
 <Layout title='Request Product'>
   {messageSent && 
     <div class="confirmation-message">
-      <p class="confirmation">Message has been sent!</p>
+      <p class="confirmation">Product request has been sent!</p>
     </div>
   }
   
   <div class="container">
-    <h2 style="text-align: center;">Requests</h2>
+    <h2 style="text-align: center;">Product Request</h2>
     <form method="POST">
       <!-- Add a hidden input field to specify the action -->
       <input type="hidden" name="action" value="requestFormSubmit">
       
-      <label for="message">Message:</label>
+      <label for="message">Please write a short description of the product:</label>
       <textarea id="message" name="message" style="width: 100%; height: 100px; resize: none;" rows="4" cols="50" required ></textarea>
 
       <label for="age">Link to an example: </label>
