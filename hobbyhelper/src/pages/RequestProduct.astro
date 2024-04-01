@@ -18,11 +18,14 @@ if (Astro.request.method === "POST") {
     // Check if the action is 'contactFormSubmit'
     if (action === 'requestFormSubmit') {
       const inputMessage = String(data.get("message"));
-      const currentDate = new Date().getDate();
+      const currentDate = new Date();
+      const inputExample = String(data.get("example"))
+      
 
-      const newUser = await xata.db.requests.create({
+      const newProductRequest = await xata.db.requests.create({
         request_description: inputMessage,
         date_requested: currentDate,
+        example_product: inputExample,
       });
 
       console.log("request form submission:", messages);
@@ -143,6 +146,9 @@ to {background-position: -50px 0px;background-size:2750px;}
       
       <label for="message">Message:</label>
       <textarea id="message" name="message" style="width: 100%; height: 100px; resize: none;" rows="4" cols="50" required ></textarea>
+
+      <label for="age">Link to an example: </label>
+      <input type="text" id="example" name="example" required/>
 
       <button type="submit">Submit</button>
     </form>
