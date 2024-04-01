@@ -119,6 +119,7 @@ const tables = [
     columns: [
       { name: "request_description", type: "string" },
       { name: "date_requested", type: "datetime" },
+      { name: "example_product", type: "string" },
     ],
   },
 ] as const;

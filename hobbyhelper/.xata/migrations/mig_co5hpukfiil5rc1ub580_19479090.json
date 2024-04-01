@@ -1,0 +1,16 @@
+{
+  "id": "mig_co5hpukfiil5rc1ub580",
+  "parentID": "mig_co5h1qsfiil5rc1ub540",
+  "checksum": "1:19479090d053c76b0b49edb7577a5e2180c4e705153bda7bd450fde9a4bf34a1",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "example_product",
+          "type": "string"
+        },
+        "table": "requests"
+      }
+    }
+  ]
+}
