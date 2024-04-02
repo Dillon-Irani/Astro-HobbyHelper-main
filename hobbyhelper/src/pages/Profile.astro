@@ -20,8 +20,20 @@ console.log("Signed-in User ID:", userInfo.get().id);
 
 if (Astro.request.method === "POST") {
   try {
-    clearUserInfo();
-    return Astro.redirect('/HobbyHome');
+    const data = await Astro.request.formData();
+    
+    const updateAge = String(data.get("age"));
+    const updateFavHobby = String(data.get("favouriteHobby"));
+    const updateBio = String(data.get("bio")); 
+
+    const userAge = parseInt(updateAge);
+    
+    const user = await xata.db.hh_user.update(userInfo.get().id, {
+      age: userAge,
+      favourite_hobby: updateFavHobby,
+      bio : updateBio
+    });
+
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -113,13 +125,18 @@ console.log("Filtered User:", filteredUser);
       <input type="email" id="email" name="email" required readonly value={filteredUser ? filteredUser.email_address : ''}>
       <br /><br />
       <label for="phone">Phone Number:</label>
-      <input type="text" id="phone" name="phone" value={filteredUser ? filteredUser.phone_number : ''}>
+      <input type="number" id="phone" name="phone" value={filteredUser ? filteredUser.phone_number : '' } readonly>
       <br /><br />
       <label for="age">Age:</label>
       <input type="number" id="age" name="age" min="0" value={filteredUser ? filteredUser.age : ''}>
       <br /><br />
       <label for="favouriteHobby">Favorite Hobby:</label>
-      <input type="text" id="favouriteHobby" name="favouriteHobby" value={filteredUser ? filteredUser.favourite_hobby : ''}>
+      <input type="text" id="favouriteHobby" name="favouriteHobby" value={filteredUser ? filteredUser.favourite_hobby : ''}, readonly>
+      <br /><br />
+      <label for="bio">Bio:</label>
+      <textarea id="bio" name="bio" style="width: 100%; height: 100px; resize: none;" rows="4" cols="50" required, value={filteredUser ? filteredUser.bio : ''}></textarea>
+
+      <button type="submit">Update</button>
     </form>
   </div>
 </Layout>
