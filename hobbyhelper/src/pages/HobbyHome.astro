@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 import styles from '../styles/home.module.css'
+import styles2 from '../styles/cardSmall.module.css';
 import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from '../components/userInformation';
 
 import { XataClient } from '.././xata';
@@ -14,10 +15,459 @@ const { records } = await xata.db.product_category.getPaginated({
     size: 50
   }
 })
+// Fetch products from the database
+const { records: products } = await xata.db.product.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: categories } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: product_configuration } = await xata.db.product_configuration.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: product_variation } = await xata.db.product_variation.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: product_variation_option } = await xata.db.product_variation_option.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: backlog } = await xata.db.backlog.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const findMostParentCategory = (categoryId) => {
+  const productCategory = categories.find((category) => category.product_category_id === categoryId);
+
+  if (productCategory) {
+    // If the category has a parent, recursively find the parent category
+    if (productCategory.parent_category_id) {
+      return findMostParentCategory(productCategory.parent_category_id);
+    } else {
+      // If there is no parent, return the category name
+      return productCategory.category_name;
+    }
+  }
+  // Return a default value if category is not found
+  return 'Category not available';
+};
+// Function to shuffle an array using Fisher Yates algorithm
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+// Shuffle the entire products array using Fisher-Yates algorithm
+const shuffledProducts = shuffleArray(products);
+
+// Select 2 random products
+const recommendedProducts = shuffledProducts.slice(0, 2);
 
 
 console.log(getUserInfo());
 ---
+<style>
+  .home-container {
+  width: 99%;
+  display: flex;
+  
+  min-height: 100vh;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #070F2B;
+}
+.home-container01 {
+  flex: 0 0 auto;
+  width: 99%;
+  margin: 5px;
+  display: flex;
+  align-self: center;
+  box-shadow: 5px 5px 10px 0px #9290c3;
+  align-items: flex-start;
+  border-color: #9290c3;
+  border-style: double;
+  border-width: 1px;
+  justify-content: flex-start;
+  background-image: linear-gradient(45deg, rgb(83, 92, 145) 1.00%,rgb(83, 92, 145) 38.00%,rgb(44, 62, 80) 100.00%);
+}
+.home-container02 {
+  flex: 0 0 auto;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  padding: 10px;
+  align-self: center;
+  align-items: flex-start;
+  text-align: center;
+  flex-direction: column;
+  justify-content: center;
+}
+.home-text {
+  color: rgb(177, 165, 218);
+  align-self: center;
+}
+.home-text01 {
+  color: rgb(255, 255, 255);
+  margin-left: 50px;
+  margin-right: 50px;
+  align-self: center;
+  font-family: "Roboto Condensed";
+}
+.home-container03 {
+  flex: 0 0 auto;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.home-image {
+  width: 400px;
+  align-self: center;
+  object-fit: cover;
+}
+.home-container04 {
+  width: 99%;
+  height: auto;
+  margin: 5px;
+  display: flex;
+  align-self: center;
+  box-shadow: 5px 5px 10px 0px #9290c3;
+  align-items: flex-start;
+  border-color: #9290c3;
+  border-style: double;
+  border-width: 1px;
+  justify-content: flex-start;
+  background-image: linear-gradient(45deg, rgb(44, 62, 80) 15.00%,rgb(83, 92, 145) 82.00%,rgb(83, 92, 145) 100.00%);
+}
+.home-container05 {
+  flex: 0 0 auto;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  margin-right: 45px;
+  flex-direction: column;
+  justify-content: center;
+}
+.home-text02 {
+  color: #661d1e;
+  align-self: center;
+  padding-top: var(--dl-space-space-oneandhalfunits);
+}
+.home-iframe {
+  width: 100%;
+  height: 500px;
+  margin-left: 25px;
+  margin-bottom: 25px;
+  z-index: 100;
+  align-self: center;
+  box-shadow: 5px 5px 10px 0px #d4d4d4;
+  border-color: var(--dl-color-gray-black);
+  border-width: 1px;
+  border-radius: var(--dl-radius-radius-radius4);
+}
+.home-container06 {
+  flex: 0 0 auto;
+  width: 45%;
+  height: 100%;
+  display: flex;
+  align-self: center;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 10px;
+}
+.home-text05 {
+  color: rgb(177, 165, 218);
+  align-self: center;
+  
+}
+.home-text08 {
+  color: rgb(255, 255, 255);
+  margin: var(--dl-space-space-unit);
+  margin-left: 50px;
+  margin-right: 50px;
+  align-self: center;
+  padding-right: 25px;
+  font-family: "Roboto Condensed";
+}
+.home-text12 {
+  color: #ffffff;
+  font-family: "Roboto Condensed";
+}
+.home-container07 {
+  flex: 0 0 auto;
+  width: 99%;
+  margin: 5px;
+  display: flex;
+  align-self: center;
+  box-shadow: 5px 5px 10px 0px #9290c3;
+  align-items: center;
+  border-color: #9290c3;
+  border-style: double;
+  border-width: 1px;
+  justify-content: flex-start;
+  background-image: linear-gradient(90deg, rgb(80, 50, 113) 39.00%,rgb(47, 14, 14) 100.00%);
+}
+.home-container08 {
+  flex: 0 0 auto;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.home-container09 {
+  flex: 0 0 auto;
+  width: 99%;
+  height: 100%;
+  display: flex;
+  align-self: center;
+  padding-top: var(--dl-space-space-threeunits);
+  flex-direction: column;
+  display: flex;
+  justify-content: center; 
+  
+}
+.home-text15 {
+  color: rgb(177, 165, 218);
+  align-self: center;
+}
+.tester{
+  align-self: center;
+}
+.home-button {
+  color: #B1A5DA;
+  box-shadow: 5px 5px 10px 0px #b1a5da;
+  border-color: rgb(177, 165, 218);
+  background-color: #361f3d;
+  padding: 10px 20px;
+  font-size: 0.9em;
+  border-radius: 10px;
+  align-self: center;
+}
+.home-container10 {
+  flex: 0 0 auto;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  padding: var(--dl-space-space-unit);
+  align-self: center;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+.home-text21 {
+  color: rgb(177, 165, 218);
+  align-self: center;
+}
+.home-text22 {
+  color: rgb(255, 255, 255);
+  margin: 0px;
+  align-self: center;
+  text-align: center;
+  font-family: "Roboto Condensed";
+}
+.home-button1 {
+  color: #B1A5DA;
+  align-self: center;
+  box-shadow: 5px 5px 10px 0px #81789f;
+  margin-top: 0px;
+  border-color: rgb(177, 165, 218);
+  margin-bottom: 15px;
+  background-color: #3d1f26;
+  padding: 10px 20px;
+  font-size: 0.9em;
+  border-radius: 10px;
+}
+.home-container11 {
+  flex: 0 0 auto;
+  width: 99%;
+  margin: 5px;
+  display: flex;
+  align-self: center;
+  box-shadow: 5px 5px 10px 0px #9290c3;
+  align-items: flex-start;
+  border-color: #9290c3;
+  border-style: double;
+  border-width: 1px;
+  justify-content: flex-start;
+  background-image: linear-gradient(45deg, rgb(83, 92, 145) 1.00%,rgb(83, 92, 145) 38.00%,rgb(44, 62, 80) 100.00%);
+}
+.home-container12 {
+  flex: 0 0 auto;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  padding: 3px;
+  
+  align-self: center;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+.home-text37 {
+  color: rgb(177, 165, 218);
+  align-self: center;
+}
+.home-text38 {
+  color: rgb(255, 255, 255);
+  margin: 10px;
+  align-self: center;
+  text-align: center;
+  font-family: "Roboto Condensed";
+}
+.home-container13 {
+  flex: 0 0 auto;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.home-container14 {
+  flex: 0 0 auto;
+  width: 99%;
+  height: 100%;
+  display: flex;
+  align-self: center;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+.home-text46 {
+  color: rgb(177, 165, 218);
+  align-self: center;
+}
+.home-container15 {
+  flex: 0 0 auto;
+  width: 99%;
+  margin: 5px;
+  display: flex;
+  align-self: center;
+  box-shadow: 5px 5px 10px 0px #9290c3;
+  align-items: flex-start;
+  border-color: #9290c3;
+  border-style: double;
+  border-width: 1px;
+  justify-content: flex-start;
+  background-image: linear-gradient(45deg, rgb(44, 62, 80) 17.00%,rgb(96, 113, 78) 99.00%);
+}
+.home-container16 {
+  flex: 0 0 auto;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.home-container17 {
+  flex: 0 0 auto;
+  width: 99%;
+  height: 100%;
+  display: flex;
+  align-self: center;
+  padding-top: var(--dl-space-space-threeunits);
+  flex-direction: column;
+}
+.home-text49 {
+  color: #ffffff;
+  align-self: center;
+}
+.home-button2 {
+  color: #ffffff;
+  align-self: center;
+  box-shadow: 5px 5px 10px 0px #a5daaa;
+ 
+  border-color: rgb(174, 218, 165);
+  margin-bottom: 15px;
+  background-color: #3b3d1f;
+  padding: 10px 20px;
+  font-size: 0.9em;
+  border-radius: 10px;
+}
+.home-container18 {
+  flex: 0 0 auto;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  padding: 5px;
+  
+  align-self: center;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+.home-text55 {
+  color: #2c3e50;
+  align-self: center;
+}
+.home-text56 {
+  color: rgb(255, 255, 255);
+  margin: 15px;
+  align-self: center;
+  text-align: center;
+  font-family: "Roboto Condensed";
+}
+.home-container19 {
+  width: 99%;
+  height: auto;
+  margin: 5px;
+  display: flex;
+  align-self: center;
+  box-shadow: 5px 5px 10px 0px #9290c3;
+  align-items: flex-start;
+  border-color: #9290c3;
+  border-style: double;
+  border-width: 1px;
+  justify-content: flex-start;
+  background-image: linear-gradient(45deg, rgb(44, 62, 80) 15.00%,rgb(83, 92, 145) 82.00%,rgb(83, 92, 145) 100.00%);
+}
+.home-container20 {
+  flex: 0 0 auto;
+  width: 99%;
+  height: 100%;
+  display: flex;
+  align-self: center;
+  align-items: flex-center;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+.home-text62 {
+  color: rgb(255, 255, 255);
+  
+  
+}
+.home-button3 {
+  color: #1d1a24;
+  align-self: center;
+  box-shadow: 5px 5px 10px 0px #b1a5da;
+  margin-top: var(--dl-space-space-twounits);
+  margin-bottom: 15px;
+  border-color: rgb(177, 165, 218);
+  padding: 10px 20px;
+
+  font-size: 0.9em;
+  border-radius: 10px;
+  background-color: #b3b2ce;
+}
+
+</style>
 <script>
 
 
@@ -27,52 +477,232 @@ console.log(getUserInfo());
 </script>
 
 <Layout title='Welcome to Hobby Helper!'>
-  <br class={styles['white-br']}/>
-<div class={styles['container']}>
-  <div id="top-container" class={styles['container1']}>
-    <div id="top-right" class={styles['container2']}>
-      <h1 class={styles['text']}>Featured Products</h1>
-      <img
-        alt="image"
-        src="https://a.storyblok.com/f/178900/900x506/2feac2371b/editorial_in-article_week-7_model-kits-sale_1280x720.jpg/m/filters:quality(95)format(webp)"
-        class={styles['image']}
-      />
+  
+  <div class="home-container">
+    <div class="home-container01">
+      <div class="home-container02">
+        <h1 class="home-text">Welcome to Hobby Hub!</h1>
+        <span class="home-text01">
+          Welcome to Hobby Hub, your virtual haven for all things
+          hobby-related! Dive into a world of endless possibilities, where
+          enthusiasts gather to share their passion, knowledge, and
+          experiences. Explore curated events, workshops, and activities
+          hosted by participating hobby shops, or build up your digital
+          collection In our Backlog Builder. Whether you're a seasoned
+          hobbyist or just starting your journey, Hobby Hub is your gateway
+          to a vibrant community of fellow enthusiasts. Come, discover, and
+          connect with us today!
+        </span>
+      </div>
+      <div class="home-container03">
+        <h1 class="home-text">Made with...</h1>
+        <img
+          alt="image"
+          src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZmoxYnM1ZDJiNDR0M3FuNHppYjR3NDVuZGdpb255cWh6bXAxbW51YSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/Xr3THQ8UgaDzIo1mpi/source.gif"
+          loading="lazy"
+          class="home-image"
+        />
+      </div>
     </div>
-    <div class={styles['container3']}>
-      <h1 class={styles['text01']}>
-        
-        Some of this week&apos;s:
-        <br></br>
-          new items, Items on sale, and hot deals! let us know what you are looking for!
-        <br></br>
-        <br></br>
-      </h1>
+    <div class="home-container04">
+      <div class="home-container05">
+        <h1 class="home-text02">
+          <span>Movie Trailer</span>
+          <br />
+        </h1>
+        <iframe
+          src="https://www.youtube.com/embed/caDYqvJ8wq8?si=R9Nbj8Snu1vEHBq1"
+          class="home-iframe"
+        ></iframe>
+      </div>
+      <div class="home-container06">
+        <h1 class="home-text05">
+          <span>News</span>
+          <br />
+        </h1>
+        <span class="home-text08">
+          <span>Movie Announcement:</span>
+          <br />
+          <span>
+            Get ready to dive back into the thrilling world of Mobile Suit
+            Gundam with "Gundam: Requiem for Vengeance"! This all-new
+            original animation, composed of six action-packed episodes, is
+            set to take you on a riveting journey through the European front
+            of the One Year War.
+          </span>
+          <br class="home-text12" />
+          <br />
+          <span>
+            Produced in collaboration with SAFEHOUSE and powered by Unreal
+            Engine 5, "Gundam: Requiem for Vengeance" promises to deliver
+            stunning visuals and immersive storytelling like never before.
+          </span>
+        </span>
+      </div>
     </div>
-  </div>
-  <div id="bottom-container" class={styles['container4']}>
-    <div id="bottom-left" class={styles['container5']}>
-      <h1 class={styles['text12']}>
-        <br></br>
-        
-          Here is this news video for this week!
-         
-        <br></br>
-        <br></br>
-          Here we display some of the cool builds from our community events
-          and also share some upcoming kits and news for your favorite
-          hobbies!
-        <br></br>
-      </h1>
+    <div class="home-container07">
+      <div class="home-container08">
+        <div class="home-container09">
+          <h1 class="home-text15">
+            <span>Already a member?</span>
+            <br />
+          </h1>
+          <a href="/SignIn" class="tester"> <!-- Replace "/signin" with the actual URL of your sign-in page -->
+            <button type="button" class="home-button button">
+              Sign In
+            </button>
+          </a>
+        </div>
+      </div>
+      <div class="home-container10">
+        <h1 class="home-text21">Join us!</h1>
+        <span class="home-text22">
+          <br />
+          <span>Wanna join the Hobby Hub Community?</span>
+          <br />
+          <br />
+          <span>Have the capability to keep track of your collection!</span>
+          <br />
+          <br />
+          <span>
+            Show off your own digital backlog in a leaderboard by joining
+            the Hobby Hub community today!
+          </span>
+          <br />
+          <span></span>
+          <br />
+        </span>
+        <a href="/Register" class="tester">
+        <button type="button" class="home-button1 button">
+          <span>
+            <span>Register</span>
+            <br />
+          </span>
+        </button>
+      </a>
+      </div>
     </div>
-    <div class={styles['container6']}>
-      <h1 class={styles['heading']}>News</h1>
-      <h1 class={styles['heading1']}>
-        Witch from Mercury  - [PROLOGUE]
-      </h1>
-      <iframe
-        src="https://www.youtube.com/embed/PjoLfWJlfyc?si=JsZNC_qz-3tEgkF7"
-        class={styles['iframe']}
-      ></iframe>
+    <div class="home-container11">
+      <div class="home-container12">
+        <h1 class="home-text37">Products</h1>
+        <span class="home-text38">
+          <span>Come take a look at what we got!</span>
+          <br />
+          <br />
+          <span>
+            Right now we are set up to specialize in One Piece Card Game and
+            Gundams!
+          </span>
+          <br />
+          <br />
+          <span>
+            Once you have signed in you can start adding these product cards
+            to your backlog!
+          </span>
+        </span>
+      </div>
+      <div class="home-container13">
+        <div class="home-container14">
+          <h1 class="home-text46">
+            <span>Featured Products!</span>
+            <br />
+          </h1>
+            <div class={`${styles2['product-container']}`}>
+              {recommendedProducts.slice(0, 4).map((product) => (
+                <a href={"/Products/" + product.product_id} ={product.product_id}>
+                  <div ={product.product_id} class={styles['product-card']}>
+                    <div class={styles2['title-div']}>
+                      <h1 class={styles2['product-name']}>{product.product_name}</h1>
+                      
+                    </div>
+                    <div class={styles2['price-div']}>
+                        <span>Price Per Unit: </span>
+                        <span class={styles2['price']}>{`$ ${product_configuration.find(
+                          (config) => config.product_item_id === product.product_id )?.price || 'Price not available'}`}</span>
+                          
+                      </div>
+                    <img
+                      alt="image"
+                      src={product.product_image ? product.product_image : 'https://i.imgur.com/O01kM4S.jpg'}
+                      class={styles2['product-image']}
+                    />
+                    <div class={styles2['brand-div']}>
+                      <span class={styles2['brand']}>Brand:</span>
+                      <span class={styles2['brand-name']}>{product.product_brand}</span>
+                    </div>
+                    <div class={styles2['category-div']}>
+                      <span class={styles2['category']}>Category:</span>
+                      <span class={styles2['category-name']}>{categories.find(
+                        (category) => category.product_category_id === product.category_id
+                      )?.category_name || 'Category not available'}</span>
+                    </div>
+                    <div class={styles2['type-div']}>
+                      <span class={styles2['type']}>Product Type:</span>
+                      <span class={styles2['type-name']}>{findMostParentCategory(product.category_id)}</span>
+                    </div>
+                    
+                    
+                  </div>
+                </a>
+              ))}
+            </div>
+          
+        </div>
+      </div>
+    </div>
+    <div class="home-container15">
+      <div class="home-container16">
+        <div class="home-container17">
+          <h1 class="home-text49">
+            <span>Request a Product!</span>
+            <br />
+          </h1>
+          <a href="/RequestProduct" class="tester">
+          <button type="button" class="home-button2 button">
+            <span>
+              <span>Request here!</span>
+              <br />
+            </span>
+          </button>
+        </a>
+        </div>
+      </div>
+      <div class="home-container18">
+        <h1 class="home-text55">Missing a product?</h1>
+        <span class="home-text56">
+          <span>Is there a product we don't have on our page?</span>
+          <br />
+          <br />
+          <span>
+            Make a product request (please include a link to a product
+            example if possible) and an admin will be sure to look!
+          </span>
+          <br />
+        </span>
+      </div>
+    </div>
+    <div class="home-container19">
+      <div class="home-container20">
+        <h2 style="text-align: center; color:white; font-size: 2.2em;">Contact Us!</h2>
+
+        <h1 class="home-text62">
+          
+          <span>- Is there anything else we can help you with?&nbsp;</span>
+          <br />
+          <span>- Find a bug?</span>
+          <br />
+          <span>- Wanna say Hi?</span>
+          <br />
+        </h1>
+        <a href="/ContactUs" class="tester">
+          <button type="button" class="home-button3 button">
+            <span>
+              <span>Contact Us</span>
+              <br />
+            </span>
+          </button>
+        </a>
+      </div>
     </div>
   </div>
 </div>
