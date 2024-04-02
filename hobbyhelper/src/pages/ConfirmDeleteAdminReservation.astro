@@ -39,7 +39,7 @@ if (Astro.request.method === "POST") {
 
   await xata.db.reservations.delete(reservationToDelete);
           console.log(`Backlog item with ID ${deleteId} has been deleted successfully.`);
-          return Astro.redirect('/MyReservations');
+          return Astro.redirect('/ManageReservations');
        
     }
   } catch (error) {
@@ -134,19 +134,19 @@ if (Astro.request.method === "POST") {
 </style>
 
 
-<Layout title='Confirm cancel Reservation'>
+<Layout title='Confirm cancel user Reservation'>
 
   <div class="background"></div>
 
   <div class="container">
-    <h2 style="text-align: center; color:white">Are you sure you wanna cancel your reservation?</h2>
+    <h2 style="text-align: center; color:white">Are you sure you wanna cancel users reservation?</h2>
     
     <form method="POST">
         <input type="hidden" name="action" value="logout">
         <button class="delete-button"type="submit">Cancel Reservation</button>
       </form>
       <br/>
-      <button class="button" onclick="window.location.href='/MyReservations'">Nah, ill keep it!</button>
+      <button class="button" onclick="window.location.href='/ManageReservations'">Nah, ill keep it!</button>
     
  
 </Layout>

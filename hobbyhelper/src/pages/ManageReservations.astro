@@ -1,0 +1,217 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { XataClient } from '../xata.js';
+import { userInfo, getUserInfo, isLoggedIn, clearUserInfo } from '../components/userInformation.js';
+// Redirect to hobby home page if not admin 
+const isAdmin = isLoggedIn.get() && userInfo.get().userType === 'admin';
+if (!isAdmin) {
+  return Astro.redirect('/HobbyHome'); 
+};
+
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+
+const { records: backlogRecords } = await xata.db.backlog.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: productCategories } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: variationOptions } = await xata.db.product_variation_option.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: products } = await xata.db.product.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: product_configuration } = await xata.db.product_configuration.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: users } = await xata.db.hh_user.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: reservations } = await xata.db.reservations.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+
+// Filter userDataArray to only include reservations for the signed-in user
+const signedInUserId = userInfo.get().id;
+const userReservations = reservations
+
+// Sort the userReservations by total cost
+userReservations.sort((a, b) => a.reservation_id - b.reservation_id);
+
+---
+
+<style>
+  .table-container {
+    max-width: 800px;
+    margin: 20px auto;
+  }
+
+  table {
+    background-color: #535C91; 
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    color:white
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+  tr{}
+  .backlog-button {
+    background-color: #007bff; /* Nice blue color */
+    color: white; /* Text color */
+    padding: 10px 20px; /* Adjust padding as needed */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block; /* Ensure it spans the full width */
+    margin: 0 auto; /* Center horizontally */
+}
+
+.backlog-button:hover {
+    background-color: #0056b3; /* Darker shade of blue on hover */
+}
+.delete-button {
+    background-color: #af4c4c;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .delete-button:hover {
+    background-color: #a04545;
+  }
+  .pickup-button {
+    background-color: #af8b4c;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .pickup-button:hover {
+    background-color: rgb(128, 113, 56);
+  }
+  .complete-button {
+    background-color: #7daf4c;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .complete-button:hover {
+    background-color: #4e6c2f;
+  }
+  
+</style>
+<script is:inline>
+
+    function deleteReservation(reservationId) {
+      window.location.href = `/ConfirmDeleteAdminReservation?delete=${reservationId}`;
+  
+    };
+    function pickupReservation(reservationId) {
+      window.location.href = `/ConfirmAvailReservation?edit=${reservationId}`;
+  
+    };
+    function completeReservation(reservationId) {
+      window.location.href = `/ConfirmCompleteReservation?edit=${reservationId}`;
+  
+    };
+    </script>
+<Layout title="Manage Reservations">
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Reservation ID</th>
+          <th>User ID</th>
+          <th>Product ID</th>
+          <th>QTY</th>
+          <th>Available for Pickup</th>
+          <th>Order Completed</th>
+          <th>Manage Reservation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {userReservations.map(data => (
+          <tr>
+            <td>{data.reservation_id}</td>
+            <td>{data.user_id}</td>
+            <td>{data.product_item_id}</td>
+            <td>{data.number_reserved}</td>
+           
+            <td>
+              {data.is_ready ? (
+                <span style="color: green">●</span>
+              ) : (
+                <span style="color: red">●</span>
+              )}
+            </td>
+            <td>
+              {data.date_picked_up ? (
+                <>
+                  <span style={{ color: 'green'}}>●</span><div>{data.date_picked_up}</div>
+                </>
+              ) : (
+                <span style={{ color: 'red' }}>●</span>
+              )}
+            </td>
+            <td>
+              <button class='delete-button' type="button" onclick={`deleteReservation(${data.reservation_id})`}>Cancel</button>
+                  <br/>
+              {data.date_picked_up ? null : (
+                <>
+                  
+                  <button class='pickup-button' type="button" onclick={`pickupReservation(${data.reservation_id})`}>Change Pickup Status</button>
+                  <br/>
+                  <button class='complete-button' type="button" onclick={`completeReservation(${data.reservation_id})`}>Complete Order</button>
+                </>
+              )}
+            </td>
+          </tr>
+        ))}
+        {userReservations.length === 0 && (
+          <tr>
+            <td colspan="3">No reservations.</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+  <button class='backlog-button' onclick="window.location.href='/Products'">View Products</button>
+</Layout>

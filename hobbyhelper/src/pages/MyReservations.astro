@@ -2,6 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import { XataClient } from '../xata';
 import { userInfo, getUserInfo, isLoggedIn, clearUserInfo } from '../components/userInformation.js';
+// Redirect to hobby home page if not logged in 
+const loggedIn = isLoggedIn.get();
+if (!loggedIn) {
+  return Astro.redirect('/HobbyHome'); 
+};
 
 const xata = new XataClient({
   apiKey: import.meta.env.XATA_API_KEY,
@@ -49,7 +54,7 @@ const signedInUserId = userInfo.get().id;
 const userReservations = reservations.filter(data => data.user_id === signedInUserId);
 
 // Sort the userReservations by total cost
-userReservations.sort((a, b) => b.totalCost - a.totalCost);
+userReservations.sort((a, b) => a.reservation_id - b.reservation_id);
 console.log(userReservations);
 ---
 
@@ -65,10 +70,16 @@ console.log(userReservations);
     border-collapse: collapse;
   }
 
-  th, td {
+  th {
     padding: 8px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+  }
+  td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    color:white
   }
 
   th {
@@ -88,6 +99,18 @@ console.log(userReservations);
 .backlog-button:hover {
     background-color: #0056b3; /* Darker shade of blue on hover */
 }
+.delete-button {
+    background-color: #af4c4c;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .delete-button:hover {
+    background-color: #a04545;
+  }
 
 </style>
 <script is:inline>
@@ -119,22 +142,22 @@ console.log(userReservations);
              
               <td>
               {data.is_ready ? (
-                <span style="color: green">&#8226;</span>
+                <span style="color: green">●</span>
               ) : (
-                <span style="color: red">&#8226;</span>
+                <span style="color: red">●</span>
               )}
             </td>
             <td>
   {data.date_picked_up ? (
     <>
-      <span style={{ color: 'green' }}>●</span> {data.date_picked_up}
+    <span style={{ color: 'green'}}>●</span><div> {data.date_picked_up}</div>
     </>
   ) : (
     <span style={{ color: 'red' }}>●</span>
   )}
 </td>
             <td>
-                <button class='delete-button' type="button" onclick={`deleteReservation(${data.reservation_id})`}>Delete</button>
+                <button class='delete-button' type="button" onclick={`deleteReservation(${data.reservation_id})`}>Cancel</button>
                 
             </td>
             

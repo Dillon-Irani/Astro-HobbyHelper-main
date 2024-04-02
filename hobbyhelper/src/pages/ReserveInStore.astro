@@ -2,6 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import { XataClient } from '.././xata';
 import { userInfo, getUserInfo, isLoggedIn, clearUserInfo } from '../components/userInformation.js';
+// Redirect to hobby home page if not logged in 
+const loggedIn = isLoggedIn.get();
+if (!loggedIn) {
+  return Astro.redirect('/HobbyHome'); 
+};
 
 const xata = new XataClient({
   apiKey: import.meta.env.XATA_API_KEY,
@@ -40,9 +45,10 @@ if (Astro.request.method === "POST") {
     const data = await Astro.request.formData();
     const selectedQuantity =  parseInt(data.get("qty"));
     const { records: reservationsNew } = await xata.db.reservations
-      .sort( 'reservation_id', 'desc' )
-      .getPaginated({ pagination: { size: 1 } });
-    const newReservationId = reservationsNew.length > 0 ? reservationsNew[0].reservation_id + 1 : 1;
+  .sort('reservation_id', 'desc')
+  .getPaginated({ pagination: { size: 1 } });
+
+const newReservationId = reservationsNew.length > 0 ? reservationsNew[0].reservation_id + 1 : 1;
     console.log("Selected Quantity:", selectedQuantity);
     console.log("new reservation id:", newReservationId);
     

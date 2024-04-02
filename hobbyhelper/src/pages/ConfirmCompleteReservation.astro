@@ -28,19 +28,23 @@ const { records: reservations } = await xata.db.reservations.getPaginated({
 if (Astro.request.method === "POST") {
   try {
     const searchQuery = Astro.request.url;
-    if (searchQuery.includes("delete=")) {
-  const startIndex = searchQuery.indexOf("delete=") + 7;
-  let deleteId = parseInt(searchQuery.slice(startIndex), 10);
-  console.log(deleteId);
-  const reservationToDelete = await xata.db.reservations.filter({
-      reservation_id: deleteId
-  }).getMany();
-  console.log(reservationToDelete);
+    if (searchQuery.includes("edit=")) {
+      const startIndex = searchQuery.indexOf("edit=") + 5;
+      let editId = parseInt(searchQuery.slice(startIndex), 10);
+      console.log(editId);
+      
+      const reservationToEdit = await xata.db.reservations.filter({
+        reservation_id: editId
+      }).getMany();
+      
+      // Toggle the value of is_ready
+      const todaysDate = new Date();
+      const reservationToEditId = reservationToEdit[0].id;
 
-  await xata.db.reservations.delete(reservationToDelete);
-          console.log(`Backlog item with ID ${deleteId} has been deleted successfully.`);
-          return Astro.redirect('/MyReservations');
-       
+      await xata.db.reservations.update(reservationToEditId, { date_picked_up: todaysDate });
+      console.log(`Reservation with ID ${editId} has been updated. Pickup date is now ${todaysDate}.`);
+      
+      return Astro.redirect('/ManageReservations');
     }
   } catch (error) {
     if (error instanceof Error) {
@@ -134,19 +138,19 @@ if (Astro.request.method === "POST") {
 </style>
 
 
-<Layout title='Confirm cancel Reservation'>
+<Layout title='Complete Reservation'>
 
   <div class="background"></div>
 
   <div class="container">
-    <h2 style="text-align: center; color:white">Are you sure you wanna cancel your reservation?</h2>
+    <h2 style="text-align: center; color:white">Has the reservation been completed?</h2>
     
     <form method="POST">
         <input type="hidden" name="action" value="logout">
-        <button class="delete-button"type="submit">Cancel Reservation</button>
+        <button class="button"type="submit">Complete Reservation</button>
       </form>
       <br/>
-      <button class="button" onclick="window.location.href='/MyReservations'">Nah, ill keep it!</button>
+      <button class="delete-button" onclick="window.location.href='/ManageReservations'">No, Not yet!</button>
     
  
 </Layout>
