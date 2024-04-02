@@ -172,31 +172,40 @@ listEvents.sort((a, b) => a.event_id - b.event_id);
           <th>Event Date</th>
           <th>Event Start Time</th>
           <th>Event End Time</th>
+          <th>Manage Event</th>
         </tr>
       </thead>
       <tbody>
-        {listEvents.map(events => {
-          //const eventConfiguration = events.find(config => config.event_id === events.event_id);
-          
-        
-          return (
-            <tr key={events.event_id}>
-              <td>{events.event_id}</td>
-              <td>{events ? events.event_type : 'Tickets Unavailable'}</td>
-              <td>{events.tickets_remaining}</td>
-              <td>{events ? events.event_price : 'Price not available'}</td>
-              <td>{events.event_description}</td>
-              <td>{events.event_img}</td>
-              <td>{events.event_date}</td>
-              <td>{events.event_start_time}</td>
-              <td>{events.event_end_time}</td>
-              <td>
-                <button class='delete-button' type="button" onclick={`deleteEvent(${events.event_id})`}>Delete</button>
-                <button class='qty-button' type="button" onclick={`changeEventQty(${events.event_id})`}>Change QTY</button>
-                <button class='price-button' type="button" onclick={`changeEventPrice(${events.event_id})`}>Change Price</button>
-                <br/>
-              </td>
-            </tr>
-          );
-        })}
+        {listEvents.reduce((uniqueEvents, event) => {
+          // Check if the event ID already exists in the uniqueEvents array
+          const existingEventIndex = uniqueEvents.findIndex(item => item.event_id === event.event_id);
+
+          // If the event ID doesn't exist, add it to the uniqueEvents array
+          if (existingEventIndex === -1) {
+            uniqueEvents.push(event);
+          }
+
+          return uniqueEvents;
+        }, []).map(event => (
+          <tr key={event.event_id}>
+            <td>{event.event_id}</td>
+            <td>{event.event_type}</td>
+            <td>{event.tickets_remaining === null ? '∞' : event.tickets_remaining}</td>
+            <td>{event.event_price}</td>
+            <td>{event.event_description}</td>
+            <td>{event.event_img}</td>
+            <td>{event.event_date}</td>
+            <td>{event.event_start_time}</td>
+            <td>{event.event_end_time}</td>
+            <td>
+              <button class='delete-button' type="button" onclick={`deleteEvent(${event.event_id})`}>Delete</button>
+              <button class='qty-button' type="button" onclick={`changeEventQty(${event.event_id})`}>Change QTY</button>
+              <button class='price-button' type="button" onclick={`changeEventPrice(${event.event_id})`}>Change Price</button>
+              <br/>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
 </Layout>
