@@ -66,6 +66,10 @@ userDataArray.sort((a, b) => b.totalCost - a.totalCost);
 ---
 
 <style>
+  .whiteText{
+    font-family: Arial, sans-serif;
+    color:  #fff; 
+  }
   .table-container {
     max-width: 800px;
     margin: 20px auto;
@@ -116,9 +120,9 @@ userDataArray.sort((a, b) => b.totalCost - a.totalCost);
       <tbody>
         {userDataArray.map(data => (
           <tr>
-            <td>{data.username}</td>
-            <td>{data.numProducts}</td>
-            <td>{data.totalCost.toFixed(2)}</td>
+            <td class="whiteText">{data.username}</td>
+            <td class="whiteText">{data.numProducts}</td>
+            <td class="whiteText">{data.totalCost.toFixed(2)}</td>
           </tr>
         ))}
         {userDataArray.length === 0 && (
