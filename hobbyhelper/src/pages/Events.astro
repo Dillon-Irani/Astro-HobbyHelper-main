@@ -178,7 +178,7 @@ listEvents.sort((a, b) => a.event_id - b.event_id);
             <td>{event.event_id}</td>
             <td>{event.event_type}</td>
             <td>{event.tickets_remaining === null ? '∞' : event.tickets_remaining}</td>
-            <td>{event.event_price}</td>
+            <td>$ {event.event_price}</td>
             <td>{event.event_description}</td>
             <td>{event.event_img}</td>
             <td>{event.event_date}</td>
