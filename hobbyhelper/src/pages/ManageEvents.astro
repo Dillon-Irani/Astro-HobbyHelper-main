@@ -1,0 +1,202 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { XataClient } from '../xata.js';
+import { userInfo, getUserInfo, isLoggedIn, clearUserInfo } from '../components/userInformation.js';
+// Redirect to hobby home page if not admin 
+const isAdmin = isLoggedIn.get() && userInfo.get().userType === 'admin';
+if (!isAdmin) {
+  return Astro.redirect('/HobbyHome'); 
+};
+
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+
+const { records: backlogRecords } = await xata.db.backlog.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: productCategories } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: variationOptions } = await xata.db.product_variation_option.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: products } = await xata.db.product.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: product_configuration } = await xata.db.product_configuration.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: users } = await xata.db.hh_user.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: reservations } = await xata.db.reservations.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: events } = await xata.db.events.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+
+// Filter userDataArray to only include reservations for the signed-in user
+const signedInUserId = userInfo.get().id;
+const listEvents = events;
+
+// Sort the userReservations by total cost
+listEvents.sort((a, b) => a.event_id - b.event_id);
+
+---
+
+<style>
+  .table-container {
+    max-width: 800px;
+    margin: 20px auto;
+  }
+
+  table {
+    background-color: #535C91; 
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    color:white
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+  tr{}
+  .backlog-button {
+    background-color: #007bff; /* Nice blue color */
+    color: white; /* Text color */
+    padding: 10px 20px; /* Adjust padding as needed */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block; /* Ensure it spans the full width */
+    margin: 0 auto; /* Center horizontally */
+}
+
+.backlog-button:hover {
+    background-color: #0056b3; /* Darker shade of blue on hover */
+}
+.delete-button {
+    background-color: #af4c4c;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .delete-button:hover {
+    background-color: #a04545;
+  }
+  .qty-button {
+    background-color: #af8b4c;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .qty-button:hover {
+    background-color: rgb(128, 113, 56);
+  }
+  .price-button {
+    background-color: #7daf4c;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .price-button:hover {
+    background-color: #4e6c2f;
+  }
+  
+</style>
+<script is:inline>
+
+    function deleteEvent(eventId) {
+      window.location.href = `/ConfirmDeleteEvent?delete=${eventId}`;
+  
+    };
+    function changeEventQty(eventId) {
+      window.location.href = `/ConfirmChangeTickets?change=${eventId}`;
+  
+    };
+    function changeEventPrice(eventId) {
+      window.location.href = `/ConfirmChangeEventPrice?change=${eventId}`;
+  
+    };
+    </script>
+<Layout title="Manage Events">
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Event ID</th>
+          <th>Event Type</th>
+          <th>Tickets Remaining</th>
+          <th>Event Price</th>
+          <th>Event Description</th>
+          <th>Event Image</th>
+          <th>Event Date</th>
+          <th>Event Start Time</th>
+          <th>Event End Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {listEvents.map(events => {
+          //const eventConfiguration = events.find(config => config.event_id === events.event_id);
+          
+        
+          return (
+            <tr key={events.event_id}>
+              <td>{events.event_id}</td>
+              <td>{events ? events.event_type : 'Tickets Unavailable'}</td>
+              <td>{events.tickets_remaining}</td>
+              <td>{events ? events.event_price : 'Price not available'}</td>
+              <td>{events.event_description}</td>
+              <td>{events.event_img}</td>
+              <td>{events.event_date}</td>
+              <td>{events.event_start_time}</td>
+              <td>{events.event_end_time}</td>
+              <td>
+                <button class='delete-button' type="button" onclick={`deleteEvent(${events.event_id})`}>Delete</button>
+                <button class='qty-button' type="button" onclick={`changeEventQty(${events.event_id})`}>Change QTY</button>
+                <button class='price-button' type="button" onclick={`changeEventPrice(${events.event_id})`}>Change Price</button>
+                <br/>
+              </td>
+            </tr>
+          );
+        })}
+</Layout>
