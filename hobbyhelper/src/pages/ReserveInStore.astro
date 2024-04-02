@@ -1,0 +1,158 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { XataClient } from '.././xata';
+
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+const { records: products } = await xata.db.product.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: product_configuration } = await xata.db.product_configuration.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const searchQuery = Astro.request.url;    
+const startIndex = searchQuery.indexOf("product=") + 8;
+let productId = parseInt(searchQuery.slice(startIndex), 10);
+
+const findProductQty = (productId) => {
+  const productQtyConfig = product_configuration.find(config => config.product_item_id === productId);
+  return productQtyConfig ? productQtyConfig.qty_in_stock : "Not in stock";
+};
+
+const messages = [];
+let messageSent = false; 
+
+if (Astro.request.method === "POST") {
+  try {
+
+
+    console.log(productId);
+    // Return the number of products in stock
+
+
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+  
+
+}
+// Get the current hour
+const currentHour = new Date().getHours();
+
+// Determine the background image based on the time of day
+const backgroundImage = currentHour >= 6 && currentHour < 18
+  ? "../images/background4.gif" // Daytime background
+  : "../images/background3.gif"; // Nighttime background
+---
+
+<style define:vars={{ backgroundImage }}>
+body  {
+    background-image: url('https://i.imgur.com/iEQcz0Z.jpeg');
+  background-size:cover;
+        -webkit-animation: slidein 100s;
+        animation: slidein 100s;
+
+        -webkit-animation-fill-mode: forwards;
+        animation-fill-mode: forwards;
+
+        -webkit-animation-iteration-count: infinite;
+        animation-iteration-count: infinite;
+
+        -webkit-animation-direction: alternate;
+        animation-direction: alternate;              
+}
+
+@-webkit-keyframes slidein {
+from {background-position: top; background-size:3000px; }
+to {background-position: -100px 0px;background-size:2750px;}
+}
+
+@keyframes slidein {
+from {background-position: top;background-size:3000px; }
+to {background-position: -100px 0px;background-size:2750px;}
+
+}
+
+
+  .container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    display: flex;
+    overflow: auto;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #6d7ab7;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+  }
+
+  button {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+  .confirmation {
+    color: white;
+  }
+  .confirmation-message {
+      background-color: #4CAF50; /* Green background */
+      color: #fff; /* White text */
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 1px;
+      text-align: center;
+      
+    }
+</style>
+
+<Layout title='Contact Us'>
+  {messageSent && 
+    <div class="confirmation-message">
+      <p class="confirmation">Message has been sent!</p>
+    </div>
+  }
+  
+  <div class="container">
+    <h2 style="text-align: center;">Confirm Reserve</h2>
+    <form method="POST">
+      <!-- Add a hidden input field to specify the action -->
+      <input type="hidden" name="action" value="contactFormSubmit">
+      
+      
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+</Layout>

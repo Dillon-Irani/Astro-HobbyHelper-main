@@ -52,6 +52,8 @@ const message: Message = { Name: "" };
 
 if (Astro.request.method === "POST") {
   try {
+    const data = await Astro.request.formData();
+    
     // Extract product ID from the URL
     const productId = parseInt(Astro.params.slug.split("/")[1]); // Extract the product ID from the URL
     const loggedIn = isLoggedIn.get();
@@ -431,7 +433,10 @@ if (productConfiguration && productConfiguration.variation_option_id) {
           <button class="cartButton" role="button" >Add to Backlog</button>
           </form>
           <br/>
-          <button class="cartButton" role="button" >Reserve in Store</button>
+          <a href={`/ReserveInStore?product=${page.id}`}><button class="cartButton" role="button">Reserve in Store</button></a>
+
+          
+          
         
         </span>
       </span>

@@ -1,43 +1,40 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import SignoutButton from '../components/SignoutButton.astro';
-
-import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from '../components/userInformation.js';
-
-
+import { userInfo, getUserInfo, isLoggedIn, clearUserInfo } from '../components/userInformation.js';
 import { XataClient } from '.././xata';
+
 const xata = new XataClient({
   apiKey: import.meta.env.XATA_API_KEY,
   branch: import.meta.env.XATA_BRANCH
 });
+
 const { records: hh_user } = await xata.db.hh_user.getPaginated({
   pagination: {
     size: 50
   }
-})
+});
 
-console.log(getUserInfo().username);
+console.log("Signed-in User ID:", userInfo.get().id);
+
 
 if (Astro.request.method === "POST") {
   try {
-    
     clearUserInfo();
     return Astro.redirect('/HobbyHome');
-
-  
-
-
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
     }
   }
 }
+
 const signedInUserId = parseInt(userInfo.get().id);
+const filteredUser = hh_user.find(user => user.user_id === signedInUserId);
 
-const filteredUser = hh_user.filter(user => user.user_id === signedInUserId);
+console.log("Filtered User:", filteredUser);
 
----  
+---
 
 <style>
   body {
@@ -103,37 +100,26 @@ const filteredUser = hh_user.filter(user => user.user_id === signedInUserId);
   }
 </style>
 
-
 <Layout title='Profile'>
-
   <div class="background"></div>
 
   <div class="container">
     <h2 style="text-align: center;">Profile</h2>
     <form method="POST">
       <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required, readonly, value=>
-       <br />
-       <br />
-      <label for="email">Email: </label>
-      <input type="email" id="email" name="email" required, readonly>
-      <br />
-      <br />
+      <input type="text" id="username" name="username" required readonly value={filteredUser ? filteredUser.username : ''}>
+      <br /><br />
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required readonly value={filteredUser ? filteredUser.email_address : ''}>
+      <br /><br />
       <label for="phone">Phone Number:</label>
-      <input type="number" id="phone" name="phone" />
-      <br />
-      <br />
+      <input type="text" id="phone" name="phone" value={filteredUser ? filteredUser.phone_number : ''}>
+      <br /><br />
       <label for="age">Age:</label>
-      <input type="number" id="age" name="age" min="0"/>
-      <br />
-      <br />
-      <label for="favouriteHobby">Favourite Hobby:</label>
-      <input type="text" id="favouriteHobby" name="favouriteHobby" >
-
+      <input type="number" id="age" name="age" min="0" value={filteredUser ? filteredUser.age : ''}>
+      <br /><br />
+      <label for="favouriteHobby">Favorite Hobby:</label>
+      <input type="text" id="favouriteHobby" name="favouriteHobby" value={filteredUser ? filteredUser.favourite_hobby : ''}>
     </form>
-
-    
- 
+  </div>
 </Layout>
-
-
