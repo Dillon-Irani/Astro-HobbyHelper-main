@@ -51,10 +51,10 @@ const { records: reservations } = await xata.db.reservations.getPaginated({
 
 // Filter userDataArray to only include reservations for the signed-in user
 const signedInUserId = userInfo.get().id;
-const userReservations = reservations
+const listProducts = products;
 
 // Sort the userReservations by total cost
-userReservations.sort((a, b) => a.reservation_id - b.reservation_id);
+listProducts.sort((a, b) => a.product_id - b.product_id);
 
 ---
 
@@ -112,7 +112,7 @@ userReservations.sort((a, b) => a.reservation_id - b.reservation_id);
   .delete-button:hover {
     background-color: #a04545;
   }
-  .pickup-button {
+  .qty-button {
     background-color: #af8b4c;
     color: #fff;
     padding: 10px;
@@ -121,10 +121,10 @@ userReservations.sort((a, b) => a.reservation_id - b.reservation_id);
     cursor: pointer;
   }
 
-  .pickup-button:hover {
+  .qty-button:hover {
     background-color: rgb(128, 113, 56);
   }
-  .complete-button {
+  .price-button {
     background-color: #7daf4c;
     color: #fff;
     padding: 10px;
@@ -133,84 +133,62 @@ userReservations.sort((a, b) => a.reservation_id - b.reservation_id);
     cursor: pointer;
   }
 
-  .complete-button:hover {
+  .price-button:hover {
     background-color: #4e6c2f;
   }
   
 </style>
 <script is:inline>
 
-    function deleteReservation(reservationId) {
-      window.location.href = `/ConfirmDeleteAdminReservation?delete=${reservationId}`;
+    function deleteProduct(reservationId) {
+      window.location.href = `/ConfirmDeleteProduct?delete=${reservationId}`;
   
     };
-    function pickupReservation(reservationId) {
-      window.location.href = `/ConfirmAvailReservation?edit=${reservationId}`;
+    function changeProductQty(reservationId) {
+      window.location.href = `/ConfirmChangeProductQty?change=${reservationId}`;
   
     };
-    function completeReservation(reservationId) {
-      window.location.href = `/ConfirmCompleteReservation?edit=${reservationId}`;
+    function changeProductPrice(reservationId) {
+      window.location.href = `/ConfirmChangeProductPrice?change=${reservationId}`;
   
     };
     </script>
-<Layout title="Manage Reservations">
+<Layout title="Manage Products">
   <div class="table-container">
     <table>
       <thead>
         <tr>
-          <th>Reservation ID</th>
-          <th>User ID</th>
           <th>Product ID</th>
+          <th>Name</th>
+          <th>Product Brand</th>
+          <th>Category</th>
+          <th>Description</th>
           <th>QTY</th>
-          <th>Available for Pickup</th>
-          <th>Order Completed</th>
-          <th>Manage Reservation</th>
+          <th>Price</th>
+          <th>Manage Product</th>
         </tr>
       </thead>
       <tbody>
-        {userReservations.map(data => (
-          <tr>
-            <td>{data.reservation_id}</td>
-            <td>{data.user_id}</td>
-            <td>{data.product_item_id}</td>
-            <td>{data.number_reserved}</td>
-           
-            <td>
-              {data.is_ready ? (
-                <span style="color: green">●</span>
-              ) : (
-                <span style="color: red">●</span>
-              )}
-            </td>
-            <td>
-              {data.date_picked_up ? (
-                <>
-                  <span style={{ color: 'green'}}>●</span><div>{data.date_picked_up}</div>
-                </>
-              ) : (
-                <span style={{ color: 'red' }}>●</span>
-              )}
-            </td>
-            <td>
-              <button class='delete-button' type="button" onclick={`deleteReservation(${data.reservation_id})`}>Cancel</button>
-                  <br/>
-              {data.date_picked_up ? null : (
-                <>
-                  
-                  <button class='pickup-button' type="button" onclick={`pickupReservation(${data.reservation_id})`}>Change Pickup Status</button>
-                  <br/>
-                  <button class='complete-button' type="button" onclick={`completeReservation(${data.reservation_id})`}>Complete Order</button>
-                </>
-              )}
-            </td>
-          </tr>
-        ))}
-        {userReservations.length === 0 && (
-          <tr>
-            <td colspan="3">No reservations.</td>
-          </tr>
-        )}
-      </tbody>
-    </table>
-  </div>
+        {listProducts.map(product => {
+          const productConfiguration = product_configuration.find(config => config.product_item_id === product.product_id);
+          const category = productCategories.find(category => category.product_category_id === product.category_id);
+        
+          return (
+            <tr key={product.product_id}>
+              <td>{product.product_id}</td>
+              <td>{product.product_name}</td>
+              <td>{product.product_brand}</td>
+              <td>{category ? category.category_name : 'Category not available'}</td>
+              <td>{product.description}</td>
+              <td>{productConfiguration ? productConfiguration.qty_in_stock : 'Qty not available'}</td>
+              <td>${productConfiguration ? productConfiguration.price : 'Price not available'}</td>
+              <td>
+                <button class='delete-button' type="button" onclick={`deleteProduct(${product.product_id})`}>Delete</button>
+                <button class='qty-button' type="button" onclick={`changeProductQty(${product.product_id})`}>Change QTY</button>
+                <button class='price-button' type="button" onclick={`changeProductPrice(${product.product_id})`}>Change Price</button>
+                <br/>
+              </td>
+            </tr>
+          );
+        })}
 </Layout>
