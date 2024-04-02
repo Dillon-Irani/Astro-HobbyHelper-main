@@ -137,7 +137,7 @@ if (Astro.request.method === "POST") {
       <input type="text" id="favouriteHobby" name="favouriteHobby" value={filteredUser ? filteredUser.favourite_hobby : ''}, readonly>
       <br /><br />
       <label for="bio">Bio:</label>
-      <textarea id="bio" name="bio" style="width: 100%; height: 100px; resize: none;" rows="4" cols="50" required, value={filteredUser ? filteredUser.bio : ''}></textarea>
+      <input id="bio" name="bio" style="width: 100%; height: 100px; resize: none;" rows="4" cols="50" required, value={filteredUser ? filteredUser.bio : ''}></input>
 
       <button type="submit">Update</button>
     </form>
