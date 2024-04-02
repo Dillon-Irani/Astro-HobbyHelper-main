@@ -17,6 +17,11 @@ const { records: hh_user } = await xata.db.hh_user.getPaginated({
 
 console.log("Signed-in User ID:", userInfo.get().id);
 
+const signedInUserId = parseInt(userInfo.get().id);
+const filteredUser = hh_user.find(user => user.user_id === signedInUserId);
+
+console.log("Filtered User:", filteredUser);
+
 
 if (Astro.request.method === "POST") {
   try {
@@ -28,11 +33,12 @@ if (Astro.request.method === "POST") {
 
     const userAge = parseInt(updateAge);
     
-    const user = await xata.db.hh_user.update(userInfo.get().id, {
+    const user = await xata.db.hh_user.update(filteredUser.id, {
       age: userAge,
       favourite_hobby: updateFavHobby,
-      bio : updateBio
+      bio : updateBio,
     });
+
 
   } catch (error) {
     if (error instanceof Error) {
@@ -41,10 +47,7 @@ if (Astro.request.method === "POST") {
   }
 }
 
-const signedInUserId = parseInt(userInfo.get().id);
-const filteredUser = hh_user.find(user => user.user_id === signedInUserId);
 
-console.log("Filtered User:", filteredUser);
 
 ---
 
