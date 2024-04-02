@@ -199,7 +199,7 @@ listEvents.sort((a, b) => a.event_id - b.event_id);
             <td>{event.event_end_time}</td>
             <td>
               <button class='delete-button' type="button" onclick={`deleteEvent(${event.event_id})`}>Delete</button>
-              <button class='qty-button' type="button" onclick={`changeEventQty(${event.event_id})`}>Change QTY</button>
+              <button class='qty-button' type="button" onclick={`changeEventQty(${event.event_id})`}>Change Tickets</button>
               <button class='price-button' type="button" onclick={`changeEventPrice(${event.event_id})`}>Change Price</button>
               <br/>
             </td>

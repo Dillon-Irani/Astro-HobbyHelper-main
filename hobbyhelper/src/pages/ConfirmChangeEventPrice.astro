@@ -13,16 +13,11 @@ const xata = new XataClient({
   apiKey: import.meta.env.XATA_API_KEY,
   branch: import.meta.env.XATA_BRANCH
 });
-const { records } = await xata.db.product_category.getPaginated({
+const { records } = await xata.db.events.getPaginated({
   pagination: {
     size: 50
   }
 })
-const { records: product_configuration } = await xata.db.product_configuration.getPaginated({
-  pagination: {
-    size: 200
-  }
-});
 
 
 if (Astro.request.method === "POST") {
@@ -36,20 +31,20 @@ if (Astro.request.method === "POST") {
   let changeId = parseInt(searchQuery.slice(startIndex), 10);
   console.log(changeId);
   console.log(newPrice);
-  const productToChange = await xata.db.product_configuration.filter({
-  product_item_id: changeId
+  const eventToChange = await xata.db.events.filter({
+  event_id: changeId
 }).getMany();
 
-if (productToChange.length > 0) {
+if (eventToChange.length > 0) {
   
         
-          const backlogIdToUpdate = productToChange[0].id;
-
-          await xata.db.product_configuration.update(backlogIdToUpdate, { price: newPrice });
-          console.log(`Quantity of backlog item with ID ${changeId} has been updated to ${newPrice}.`);
-          return Astro.redirect('/Products/' + changeId);
+          const backlogIdToUpdate = eventToChange[0].id;
+          const strPrice = String(newPrice)
+          await xata.db.events.update(backlogIdToUpdate, { event_price: strPrice });
+          console.log(`Price of event with ID ${changeId} has been updated to ${newPrice}.`);
+          return Astro.redirect('/ManageEvents/');
         } else {
-          console.log(`Invalid quantity for backlog item with ID ${changeId}.`);
+          console.log(`Invalid quantity for event with ID ${changeId}.`);
         }
       } 
   } catch (error) {
@@ -145,12 +140,12 @@ if (productToChange.length > 0) {
 </style>
 
 
-<Layout title='Change Product Price'>
+<Layout title='Change Event Price'>
 
   <div class="background"></div>
 
   <div class="container">
-    <h2 style="text-align: center; color:white">Confirm change product Price?</h2>
+    <h2 style="text-align: center; color:white">Confirm change event Price?</h2>
     
     <form method="POST">
       <p style="color: white;">Enter the new Price in $CAD:</p>
