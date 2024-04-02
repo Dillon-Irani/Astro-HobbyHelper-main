@@ -1,0 +1,152 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { XataClient } from '../xata';
+import { userInfo, getUserInfo, isLoggedIn, clearUserInfo } from '../components/userInformation.js';
+
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+
+const { records: backlogRecords } = await xata.db.backlog.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: productCategories } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: variationOptions } = await xata.db.product_variation_option.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: products } = await xata.db.product.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: product_configuration } = await xata.db.product_configuration.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: users } = await xata.db.hh_user.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: reservations } = await xata.db.reservations.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+
+// Filter userDataArray to only include reservations for the signed-in user
+const signedInUserId = userInfo.get().id;
+const userReservations = reservations.filter(data => data.user_id === signedInUserId);
+
+// Sort the userReservations by total cost
+userReservations.sort((a, b) => b.totalCost - a.totalCost);
+console.log(userReservations);
+---
+
+<style>
+  .table-container {
+    max-width: 800px;
+    margin: 20px auto;
+  }
+
+  table {
+    background-color: #535C91; 
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+  .backlog-button {
+    background-color: #007bff; /* Nice blue color */
+    color: white; /* Text color */
+    padding: 10px 20px; /* Adjust padding as needed */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block; /* Ensure it spans the full width */
+    margin: 0 auto; /* Center horizontally */
+}
+
+.backlog-button:hover {
+    background-color: #0056b3; /* Darker shade of blue on hover */
+}
+
+</style>
+<script is:inline>
+
+    function deleteReservation(reservationId) {
+      window.location.href = `/ConfirmDeleteReservation?delete=${reservationId}`;
+  
+    };
+    </script>
+<Layout title="My Reservations">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Reservation ID</th>
+            <th>Product ID</th>
+            <th>QTY</th>
+            <th>Available for Pickup</th>
+            <th>Order Completed</th>
+            <th>Cancel Reservation</th>
+          </tr>
+        </thead>
+        <tbody>
+          {userReservations.map(data => (
+            <tr>
+              <td>{data.reservation_id}</td>
+              <td>{data.product_item_id}</td>
+              <td>{data.number_reserved}</td>
+             
+              <td>
+              {data.is_ready ? (
+                <span style="color: green">&#8226;</span>
+              ) : (
+                <span style="color: red">&#8226;</span>
+              )}
+            </td>
+            <td>
+  {data.date_picked_up ? (
+    <>
+      <span style={{ color: 'green' }}>●</span> {data.date_picked_up}
+    </>
+  ) : (
+    <span style={{ color: 'red' }}>●</span>
+  )}
+</td>
+            <td>
+                <button class='delete-button' type="button" onclick={`deleteReservation(${data.reservation_id})`}>Delete</button>
+                
+            </td>
+            
+            </tr>
+          ))}
+          {userReservations.length === 0 && (
+            <tr>
+              <td colspan="3">You have no reservations.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+    <button class='backlog-button' onclick="window.location.href='/Products'">View Products</button>
+  </Layout>

@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { XataClient } from '.././xata';
+import { userInfo, getUserInfo, isLoggedIn, clearUserInfo } from '../components/userInformation.js';
 
 const xata = new XataClient({
   apiKey: import.meta.env.XATA_API_KEY,
@@ -12,6 +13,11 @@ const { records: products } = await xata.db.product.getPaginated({
   },
 });
 const { records: product_configuration } = await xata.db.product_configuration.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: reservations } = await xata.db.reservations.getPaginated({
   pagination: {
     size: 200,
   },
@@ -30,12 +36,23 @@ let messageSent = false;
 
 if (Astro.request.method === "POST") {
   try {
-
-
-    console.log(productId);
-    // Return the number of products in stock
-
-
+    const signedInUserId = parseInt(userInfo.get().id);
+    const data = await Astro.request.formData();
+    const selectedQuantity =  parseInt(data.get("qty"));
+    const { records: reservationsNew } = await xata.db.reservations
+      .sort( 'reservation_id', 'desc' )
+      .getPaginated({ pagination: { size: 1 } });
+    const newReservationId = reservationsNew.length > 0 ? reservationsNew[0].reservation_id + 1 : 1;
+    console.log("Selected Quantity:", selectedQuantity);
+    console.log("new reservation id:", newReservationId);
+    
+    const newReservation = await xata.db.reservations.create({
+        reservation_id: newReservationId,
+        user_id: signedInUserId,
+        product_item_id: productId,
+        number_reserved: selectedQuantity
+      });
+      return Astro.redirect('/MyReservations');
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -137,22 +154,29 @@ to {background-position: -100px 0px;background-size:2750px;}
     }
 </style>
 
-<Layout title='Contact Us'>
-  {messageSent && 
-    <div class="confirmation-message">
-      <p class="confirmation">Message has been sent!</p>
+<Layout title='Reserve In Store?'>
+    {messageSent && 
+      <div class="confirmation-message">
+        <p class="confirmation">Message has been sent!</p>
+      </div>
+    }
+    
+    <div class="container">
+      <h2 style="text-align: center;">Confirm Reserve</h2>
+      <form method="POST">
+        <!-- Add a hidden input field to specify the action -->
+        <input type="hidden" name="action" value="contactFormSubmit">
+        
+        <label for="qty">Quantity:</label>
+        <select id="qty" name="qty">
+          {productId && (
+            Array.from({ length: findProductQty(productId) }, (_, index) => (
+              <option key={index + 1} value={index + 1}>{index + 1}</option>
+            ))
+          )}
+        </select>
+        <br>
+        <button  type="submit">Submit</button>
+      </form>
     </div>
-  }
-  
-  <div class="container">
-    <h2 style="text-align: center;">Confirm Reserve</h2>
-    <form method="POST">
-      <!-- Add a hidden input field to specify the action -->
-      <input type="hidden" name="action" value="contactFormSubmit">
-      
-      
-
-      <button type="submit">Submit</button>
-    </form>
-  </div>
-</Layout>
+  </Layout>
