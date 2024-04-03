@@ -100,6 +100,20 @@ const totalItems = filteredBacklogs.reduce((total, backlog) => total + backlog.b
 .flash-text {
   animation: flash-glow 10s infinite;
 }
+.backlog-button {
+    background-color: #007bff; /* Nice blue color */
+    color: white; /* Text color */
+    padding: 10px 20px; /* Adjust padding as needed */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block; /* Ensure it spans the full width */
+    margin: 0 auto; /* Center horizontally */
+}
+
+.backlog-button:hover {
+    background-color: #0056b3; /* Darker shade of blue on hover */
+}
 </style>
 <script is:inline>
 
@@ -162,8 +176,8 @@ const totalItems = filteredBacklogs.reduce((total, backlog) => total + backlog.b
                       <br/>
                       <div class={styles['brand-div']}>
                         <span class={styles['brand']}>QTY:</span>
-                        <span class={styles['brand-name']}>{`x ${backlogRecords.find(
-                            (config) => config.product_id === product.product_id )?.backlog_product_qty || 'QTY not available'}`}</span>
+                        <span class={styles['brand-name']}>{`x ${filteredBacklogs.find(
+  (backlog) => backlog.product_id === product.product_id )?.backlog_product_qty || 'QTY not available'}`}</span>
                       </div>
                      
                       <a>
@@ -179,7 +193,7 @@ const totalItems = filteredBacklogs.reduce((total, backlog) => total + backlog.b
                 </h2>
               )}
             </div>
-          
+            <button class='backlog-button' onclick="window.location.href='/Products'">View Products</button>
         </div>
       </main>
 

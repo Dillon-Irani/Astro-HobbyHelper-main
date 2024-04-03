@@ -169,30 +169,34 @@ const { records: hh_contact_us } = await xata.db.hh_contact_us.getPaginated({
 <Layout title="Manage Messages">
   <button class='backlog-button' onclick="window.location.href='/AdminDashboard'" >Return to Dashboard</button>
   <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Contact Email</th>
-          <th>Contact Phone #</th>
-          <th>Message</th>
-          <th>Manage Request</th>
-        </tr>
-      </thead>
-      <tbody>
-        {hh_contact_us.map(contact => (
-          <tr key={contact.contact_id}>
-            <td>{contact.name}</td>
-            <td>{contact.email}</td>
-            <td>{contact.phone}</td>
-            <td>{contact.message}</td>
-            <td>
-              <button class='delete-button' type="button" onclick={`deleteContact(${contact.contact_id})`}>Delete</button>
-              <br/>
-            </td>
+    {hh_contact_us.length === 0 ? (
+      <h1 style="color: red; text-align: center;">There are no messages at this time.</h1>
+    ) : (
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Contact Email</th>
+            <th>Contact Phone #</th>
+            <th>Message</th>
+            <th>Manage Request</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {hh_contact_us.map(contact => (
+            <tr key={contact.contact_id}>
+              <td>{contact.name}</td>
+              <td>{contact.email}</td>
+              <td>{contact.phone}</td>
+              <td>{contact.message}</td>
+              <td>
+                <button class='delete-button' type="button" onclick={`deleteContact(${contact.contact_id})`}>Delete</button>
+                <br/>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
   </div>
 </Layout>

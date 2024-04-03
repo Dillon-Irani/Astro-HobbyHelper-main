@@ -172,6 +172,9 @@ userReservations.sort((a, b) => a.reservation_id - b.reservation_id);
 <Layout title="Manage Reservations">
   <button class='backlog-button' onclick="window.location.href='/AdminDashboard'" >Return to Dashboard</button>
   <div class="table-container">
+    {userReservations.length === 0 ? (
+      <h1 style="color: red; text-align: center;">There are no reservations at this time.</h1>
+    ) : (
     <table>
       <thead>
         <tr>
@@ -229,5 +232,6 @@ userReservations.sort((a, b) => a.reservation_id - b.reservation_id);
         )}
       </tbody>
     </table>
+    )}
   </div>
 </Layout>
