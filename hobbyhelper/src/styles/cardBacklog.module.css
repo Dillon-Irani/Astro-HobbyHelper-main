@@ -141,7 +141,7 @@
     }
     .description-div {
       width: 100%;
-      height: 86px;
+      
       display: flex;
       align-items: center;
       padding-top: var(--dl-space-space-unit);

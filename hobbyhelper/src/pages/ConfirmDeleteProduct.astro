@@ -35,13 +35,23 @@ if (Astro.request.method === "POST") {
   const productToDelete = await xata.db.product.filter({
       product_id: deleteId
   }).getMany();
+
+  const productToDelete2 = await xata.db.product_configuration.filter({
+      product_item_id: deleteId
+  }).getMany();
+
   console.log(productToDelete);
 
   await xata.db.product.delete(productToDelete);
           console.log(`Product with ID ${deleteId} has been deleted successfully.`);
+          
+  await xata.db.product.delete(productToDelete2);
+          console.log(`Product with ID ${deleteId} has been deleted successfully.`);
           return Astro.redirect('/ManageProducts');
        
     }
+    
+
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);

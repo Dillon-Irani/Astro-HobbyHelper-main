@@ -153,7 +153,9 @@ const totalItems = filteredBacklogs.reduce((total, backlog) => total + backlog.b
         </div>
           </div>
           <button class='backlog-button' onclick="window.location.href='/UserDashboard'" >Return to Dashboard</button>
-            <div class={`${styles['product-container']}`}>
+          <br/>  
+          <br/>  
+          <div class={`${styles['product-container']}`}>
               {filteredProducts.length > 0 ? (
                 filteredProducts.map(product => (
                   <a href={"/Products/" + product.product_id}>

@@ -76,7 +76,7 @@ if (Astro.request.method === "POST") {
 
         const { records: recentConfigurations } = await xata.db.product_configuration.sort('product_item_id', 'desc').getPaginated({ pagination: { size: 1 } });
         
-
+        console.log(price);
         await xata.db.product_configuration.create({
           product_item_id: newProductId,
           variation_option_id: variationOptionId,
