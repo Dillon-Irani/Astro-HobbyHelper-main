@@ -153,6 +153,9 @@ const { records: requests } = await xata.db.requests.getPaginated({
     </script>
 <Layout title="Manage Product Requests">
   <div class="table-container">
+    {requests.length === 0 ? (
+      <h1 style="color: red; text-align: center;">There are no product requests at this time.</h1>
+    ) : (
     <table>
       <thead>
         <tr>
@@ -179,5 +182,6 @@ const { records: requests } = await xata.db.requests.getPaginated({
         ))}
       </tbody>
     </table>
+    )}
   </div>
 </Layout>
