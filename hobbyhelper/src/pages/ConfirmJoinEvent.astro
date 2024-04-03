@@ -1,0 +1,217 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SignoutButton from '../components/SignoutButton.astro';
+import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from '../components/userInformation.js';
+import { XataClient } from '../xata.js';
+
+
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+const { records } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 50
+  }
+})
+const { records: product_configuration } = await xata.db.product_configuration.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+
+interface Message {
+
+  error?: string;
+}
+const message: Message = {
+  error: ""
+};
+
+if (Astro.request.method === "POST") {
+  try {
+    const data = await Astro.request.formData();
+    const signedInUserId = parseInt(userInfo.get().id);
+    const searchQuery = Astro.request.url;
+    if (searchQuery.includes("joinid=")) {
+  const startIndex = searchQuery.indexOf("joinid=") + 7;
+  let changeId = parseInt(searchQuery.slice(startIndex), 10);
+ 
+  const eventToJoin = await xata.db.events.filter({
+  event_id: changeId
+}).getMany();
+console.log(eventToJoin);
+const eventToCheck = await xata.db.events.filter({
+      event_id: changeId,
+      event_attendee_user_id: signedInUserId
+  }).getMany();
+  
+  if (eventToCheck.length > 0) {
+    message.error = "You are already signed up for this event.";
+  }else  {
+if (eventToJoin.length > 0) {
+  
+        
+          const eventId = eventToJoin[0].event_id;
+          const eventType = eventToJoin[0].event_type;
+          const ticketsRemaining = eventToJoin[0].tickets_remaining;
+          const eventPrice = eventToJoin[0].event_price;
+          const eventAttendee = signedInUserId;
+          const eventDescription = eventToJoin[0].event_description;
+          const eventStartDate = eventToJoin[0].event_date;
+          const eventStartTime = eventToJoin[0].event_start_time;
+          const eventEndTime = eventToJoin[0].event_end_time;
+          const eventImg = eventToJoin[0].event_img;
+          const eventIsAvail = eventToJoin[0].is_available;
+          
+          let newTicketsRemaining;
+      
+          if (eventToJoin[0].tickets_remaining === null) {
+          newTicketsRemaining = null;
+        } else {
+          newTicketsRemaining = ticketsRemaining - 1;
+        }
+
+      const joinEvent = await xata.db.events.create({
+        event_id: eventId,
+        event_type: eventType,
+        tickets_remaining: newTicketsRemaining,
+        event_price: eventPrice, 
+        event_attendee_user_id: eventAttendee,
+        event_description: eventDescription,
+        event_date: eventStartDate,
+        event_start_time: eventStartTime,
+        event_end_time: eventEndTime,
+        event_img: eventImg,
+        is_available: eventIsAvail
+      });
+
+
+      const eventIdToUpdate = eventToJoin[0].id;
+      await xata.db.events.update(eventIdToUpdate, { tickets_remaining: newTicketsRemaining });
+
+          console.log(`You have been sign up for event with ID ${changeId}.`);
+          return Astro.redirect('/MyEvents');
+        } else {
+          console.log(`Invalid quantity for backlog item with ID ${changeId}.`);
+        }
+      } 
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+}
+
+---  
+
+<style>
+  body {
+    background-image: url("../images/background2.gif");
+    font-family: Arial, sans-serif;
+    background-size: cover;
+  }
+
+  .container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    display: flex;
+    overflow: auto;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #6d7ab7;
+  }
+  button {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+  .delete-button {
+    background-color: #af4c4c;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    
+  }
+
+  .delete-button:hover {
+    background-color: #a04545;
+  }
+
+  .confirmation {
+    color: white;
+  }
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+
+  button {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+  .confirmation {
+    color: white;
+  }
+
+  .error-message {
+    background-color: red;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 1px;
+    text-align: center;
+  }
+</style>
+
+
+<Layout title='Confirm Join Event'>
+  {message.error && (
+    <div class="error-message">
+      <p class="error">{message.error}</p>
+    </div>
+  )}
+
+
+  <div class="background"></div>
+
+  <div class="container">
+    <h2 style="text-align: center; color:white">Confirm Event sign up!</h2>
+    
+    <form method="POST">
+    
+        <button class="button"type="submit">Join Event</button>
+        
+      </form>
+      <br/>
+      <button class="delete-button" onclick="window.location.href='/Events'">Nah, ill pass!</button>
+    
+ 
+</Layout>
+
+

@@ -4,11 +4,10 @@ import SignoutButton from '../components/SignoutButton.astro';
 import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from '../components/userInformation.js';
 import { XataClient } from '../xata.js';
 // Redirect to hobby home page if not logged in 
-const loggedIn = isLoggedIn.get();
-if (!loggedIn) {
+const isAdmin = isLoggedIn.get() && userInfo.get().userType === 'admin';
+if (!isAdmin) {
   return Astro.redirect('/HobbyHome'); 
 };
-
 const xata = new XataClient({
   apiKey: import.meta.env.XATA_API_KEY,
   branch: import.meta.env.XATA_BRANCH

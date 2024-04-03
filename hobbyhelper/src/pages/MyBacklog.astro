@@ -8,7 +8,7 @@ import { XataClient } from '../xata';
 // Redirect to hobby home page if not logged in 
 const loggedIn = isLoggedIn.get();
 if (!loggedIn) {
-  return Astro.redirect('/HobbyHome'); 
+  return Astro.redirect('/SignIn'); 
 };
 
 const xata = new XataClient({

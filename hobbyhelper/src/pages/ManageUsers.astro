@@ -2,6 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import { XataClient } from '../xata.js';
 import { userInfo, getUserInfo, isLoggedIn, clearUserInfo } from '../components/userInformation.js';
+// Redirect to hobby home page if not admin 
+const isAdmin = isLoggedIn.get() && userInfo.get().userType === 'admin';
+if (!isAdmin) {
+  return Astro.redirect('/HobbyHome'); 
+};
 
 const xata = new XataClient({
   apiKey: import.meta.env.XATA_API_KEY,
@@ -43,23 +48,18 @@ const { records: reservations } = await xata.db.reservations.getPaginated({
     size: 200,
   },
 });
-const { records: events } = await xata.db.events.getPaginated({
-  pagination: {
-    size: 200,
-  },
-});
 
 // Filter userDataArray to only include reservations for the signed-in user
 const signedInUserId = userInfo.get().id;
-const listEvents = events;
+const listUsers = products;
 
 // Sort the userReservations by total cost
-listEvents.sort((a, b) => a.event_id - b.event_id);
-console.log(isLoggedIn);
+listUsers.sort((a, b) => a.product_id - b.product_id);
+
 ---
 
 <style>
- .table-container {
+  .table-container {
     max-width: 800px;
     margin: 20px auto;
   }
@@ -95,9 +95,6 @@ console.log(isLoggedIn);
     cursor: pointer;
     display: block; /* Ensure it spans the full width */
     margin: 0 auto; /* Center horizontally */
-}
-.img{
-  width: 15px;
 }
 
 .backlog-button:hover {
@@ -143,67 +140,47 @@ console.log(isLoggedIn);
 </style>
 <script is:inline>
 
-    function joinEvent(eventId) {
-      window.location.href = `/ConfirmJoinEvent?joinid=${eventId}`;
+    function deleteUser(userId) {
+      window.location.href = `/ConfirmDeleteUser?delete=${userId}`;
   
     };
+    function changeProductQty(reservationId) {
+      window.location.href = `/ConfirmChangeProductQty?change=${reservationId}`;
+  
+    };
+
     </script>
-<Layout title="Manage Events">
+<Layout title="Manage Users">
   <div class="table-container">
     <table>
       <thead>
         <tr>
-          <th>Event ID</th>
-          <th>Event Type</th>
-          <th>Tickets Remaining</th>
-          <th>Event Price</th>
-          <th>Event Description</th>
-          <th>Event Image</th>
-          <th>Event Date</th>
-          <th>Event Start Time</th>
-          <th>Event End Time</th>
-          {isLoggedIn.get() && <th>Join Event</th>}
+          <th>User ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Phone Number</th>
+          <th>Age</th>
+          <th>Favourite Hobby</th>
+          <th>Description</th>
+          <th>Manage User</th>
         </tr>
       </thead>
       <tbody>
-        {listEvents.reduce((uniqueEvents, event) => {
-          // Check if the event ID already exists in the uniqueEvents array
-          const existingEventIndex = uniqueEvents.findIndex(item => item.event_id === event.event_id);
-
-          // If the event ID doesn't exist, add it to the uniqueEvents array
-          if (existingEventIndex === -1) {
-            uniqueEvents.push(event);
-          }
-
-          return uniqueEvents;
-        }, []).map(event => (
-          <tr key={event.event_id}>
-            <td>{event.event_id}</td>
-            <td>{event.event_type}</td>
-            <td>{event.tickets_remaining === null ? '∞' : event.tickets_remaining}</td>
-            <td>$ {event.event_price}</td>
-            <td>{event.event_description}</td>
+        {users.map(user => (
+          <tr key={user.user_id}>
+            <td>{user.user_id}</td>
+            <td>{user.username}</td>
+            <td>{user.email_address}</td>
+            <td>{user.phone_number}</td>
+            <td>{user.age}</td>
+            <td>{user.favourite_hobby}</td>
+            <td>{user.bio}</td>
             <td>
-              <img 
-                alt="image" 
-                src={event.event_img ? event.event_img : 'https://i.imgur.com/O01kM4S.jpg'} 
-                style={{ width: '155px' }} 
-              />
+              <button class='delete-button' type="button" onclick={`deleteUser(${user.user_id})`}>Delete</button>
+              
+              <br/>
             </td>
-            <td>{event.event_date}</td>
-            <td>{event.event_start_time}</td>
-            <td>{event.event_end_time}</td>
-            {isLoggedIn.get() && event.tickets_remaining !== 0 && (
-              <td>
-                <button class='price-button' type="button" onclick={`joinEvent(${event.event_id})`}>Join Event</button>
-                <br/>
-              </td>
-            )}
           </tr>
         ))}
       </tbody>
-    </table>
-    <br/>
-    <button class='backlog-button' onclick="window.location.href='/MyEvents'">Go To My Events</button>
-  </div>
 </Layout>

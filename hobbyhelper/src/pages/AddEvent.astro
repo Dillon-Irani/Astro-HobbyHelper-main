@@ -51,39 +51,47 @@ if (Astro.request.method === "POST") {
 
     if (action === 'addEvent') {
       const eventType = String(data.get("eventType"));
+      const eventDesc = String(data.get("eventDesc"));
       const ticketsRemaining = parseInt(data.get("ticketsRemaining"));
       const eventPrice = String(data.get("eventPrice"));
-      const eventDescription = String(data.get("eventDescription"));
       const eventDate = String(data.get("eventDate"));
       const eventStartTime = eventDate;
       const eventEndTime = String(data.get("eventEndTime"));
       const eventImage = String(data.get("eventImage"));
       const isAvailable = false;
+      const signedInUserId = parseInt(userInfo.get().id);
 
-      if (!eventType.trim() || !eventPrice.trim() || !eventDescription.trim() || isNaN(ticketsRemaining)
+      if (!eventType.trim() || !eventPrice.trim() || !eventDesc.trim() || isNaN(ticketsRemaining)
       || !eventImage.trim()) {
         message.error = "All fields are required and tickets and price should be valid numbers.";
       } else {
-        const newStart = new Date(eventDate);
-        const newEnd = new Date(eventEndTime);
-
+         // Convert eventDate to a Date object
+         
+         const startDate = new Date(eventDate);
+         const endDate = new Date(eventEndTime);
+         console.log(eventDate);
+         console.log(eventEndTime);
+         console.log(startDate);
+         console.log(endDate);
+        
 
         const { records: recentEvents } = await xata.db.events.sort('event_id', 'desc').getPaginated({ pagination: { size: 1 } });
         const newEventId = recentEvents.length > 0 ? recentEvents[0].event_id + 1 : 1;
 
         await xata.db.events.create({
           event_id: newEventId,
+          event_description: eventDesc,
+          event_attendee_user_id: signedInUserId,
           event_type: eventType,
           tickets_remaining: ticketsRemaining,
           event_price: eventPrice,
-          event_description: eventDescription,
-          event_date: newStart,
-          event_start_time: newStart,
-          event_end_time: newEnd,
+          event_date: startDate,
+          event_start_time: startDate,
+          event_end_time: endDate,
           event_img: eventImage,
           is_available: isAvailable,
         });
-
+        message.eventId = `Event with ID:"${newEventId}" added successfully!`;
       }
     }
   } catch (error) {
@@ -203,21 +211,21 @@ if (Astro.request.method === "POST") {
 
   </style>
   
-  <Layout title="Add Product">
+  <Layout title="Create New Event">
     {message.error && (
         <div class="error-message">
           <p class="error">{message.error}</p>
         </div>
       )}
     
-      {message.eventType && (
-        <div class={message.eventType.includes("successfully") ? "confirmation-message" : "error-message"}>
-          <p class="confirmation">{message.eventType}</p>
+      {message.eventId && (
+        <div class={message.eventId.includes("successfully") ? "confirmation-message" : "error-message"}>
+          <p class="confirmation">{message.eventId}</p>
         </div>
       )}
     <div class="form-container">
       <div class="form-header">
-        <h2>Add New Event</h2>
+        <h2 style="color:white;">Create New Event</h2>
       </div>
       <form method="POST">
         <input type="hidden" name="action" value="addEvent">
@@ -226,7 +234,10 @@ if (Astro.request.method === "POST") {
           <label for="eventType">Event Type:</label>
           <input type="text" id="eventType" name="eventType" required>
         </div>
-  
+        <div class="form-group">
+          <label for="eventDesc">Event Description:</label>
+      <textarea id="eventDesc" name="eventDesc" style="width: 100%; height: 100px; resize: none;" rows="4" cols="50" required></textarea>
+        </div>
         <div class="form-group">
           <label for="ticketsRemaining">Tickets Remaining:</label>
           <input type="number" id="ticketsRemaining" name="ticketsRemaining" required>
@@ -234,7 +245,7 @@ if (Astro.request.method === "POST") {
   
         <div class="form-group">
           <label for="eventPrice">Event Price:</label>
-          <input type="number" id="eventPrice" name="eventPrice" required>
+          <input type="number" id="eventPrice" name="eventPrice" min="0"  step="0.01"required>
         </div>
   
         <div class="form-group">
@@ -244,13 +255,13 @@ if (Astro.request.method === "POST") {
         </div>
         <button class='imgur-button' type="button" onclick="window.open('https://imgur.com/a/6O7RMNs', '_blank')" style="width: 100%;">Imgur Collection</button>
         <div class="form-group">
-          <label for="eventDate">Event Start Date:</label>
+          <label for="eventDate">Event Start:</label>
           <input type="datetime-local" id="eventDate" name="eventDate" required>
         </div>
   
         <div class="form-group">
-          <label for="eventEndDate">Event End Time:</label>
-          <input type="datetime-local" id="eventEndDate" name="eventEndDate" required>
+          <label for="eventEndTime">Event End:</label>
+          <input type="datetime-local" id="eventEndTime" name="eventEndTime" required>
         </div>
   
         <div class="form-group">

@@ -193,7 +193,13 @@ listEvents.sort((a, b) => a.event_id - b.event_id);
             <td>{event.tickets_remaining === null ? '∞' : event.tickets_remaining}</td>
             <td>{event.event_price}</td>
             <td>{event.event_description}</td>
-            <td>{event.event_img}</td>
+            <td>
+              <img 
+                alt="image" 
+                src={event.event_img ? event.event_img : 'https://i.imgur.com/O01kM4S.jpg'} 
+                style={{ width: '155px' }} 
+              />
+            </td>
             <td>{event.event_date}</td>
             <td>{event.event_start_time}</td>
             <td>{event.event_end_time}</td>

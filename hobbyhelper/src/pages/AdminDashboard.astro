@@ -23,15 +23,18 @@ const { records } = await xata.db.product_category.getPaginated({
         <div class={styles.container}>
           <h1 class={styles.title}>Welcome to the Admin Dashboard</h1>
           <div class={styles.buttonContainer}>
+            
             <a href="/AddCategory" class={styles.button}>Add Category</a>
             <a href="/AddProductVariation" class={styles.button}>Add Product Variation</a>
             <a href="/AddProductVariationOption" class={styles.button}>Add Product Variation Option</a>
             <a href="/AddProduct" class={styles.button}>Add Product</a>
-            <a href="/AddEvent" class={styles.button}>Add Event</a>
-            <a href="/ManageReservations" class={styles.button}>Manage Reservations</a>
             <a href="/ManageProducts" class={styles.button}>Manage Products</a>
-            <a href="/manage-users" class={styles.button}>Manage Users</a>
+            <a href="/AddEvent" class={styles.button}>Add Event</a>
             <a href="/ManageEvents" class={styles.button}>Manage Events</a>
+            <a href="/ManageReservations" class={styles.button}>Manage Reservations</a>
+            <a href="/ManageUsers" class={styles.button}>Manage Users</a>
+            <a href="/ManageUsers" class={styles.button}>Manage Messages</a>
+            
           </div>
         </div>
      

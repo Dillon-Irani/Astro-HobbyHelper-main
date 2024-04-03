@@ -3,41 +3,42 @@ import Layout from '../layouts/Layout.astro';
 import SignoutButton from '../components/SignoutButton.astro';
 import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from '../components/userInformation.js';
 import { XataClient } from '../xata.js';
-// Redirect to hobby home page if not logged in 
-const isAdmin = isLoggedIn.get() && userInfo.get().userType === 'admin';
-if (!isAdmin) {
-  return Astro.redirect('/HobbyHome'); 
-};
+
 
 const xata = new XataClient({
   apiKey: import.meta.env.XATA_API_KEY,
   branch: import.meta.env.XATA_BRANCH
 });
-const { records } = await xata.db.events.getPaginated({
+const { records } = await xata.db.product_category.getPaginated({
   pagination: {
     size: 50
+  }
+})
+const { records: event } = await xata.db.events.getPaginated({
+  pagination: {
+    size: 200
   }
 });
 
 
 if (Astro.request.method === "POST") {
   try {
+    const data = await Astro.request.formData();
+    const signedInUserId = parseInt(userInfo.get().id);
     const searchQuery = Astro.request.url;
-    if (searchQuery.includes("delete=")) {
-  const startIndex = searchQuery.indexOf("delete=") + 7;
+    if (searchQuery.includes("quitid=")) {
+  const startIndex = searchQuery.indexOf("quitid=") + 7;
   let deleteId = parseInt(searchQuery.slice(startIndex), 10);
   console.log(deleteId);
-  
   const eventToDelete = await xata.db.events.filter({
-      event_id: deleteId
-  }).getMany();
-  console.log(eventToDelete);
-
+      event_id: deleteId,
+      event_attendee_user_id: signedInUserId
+  }).getMany(); 
   await xata.db.events.delete(eventToDelete);
-          console.log(`Event with ID ${deleteId} has been deleted successfully.`);
-          return Astro.redirect('/ManageEvents');
-       
+          console.log(` You have succesfully resigned from Event:${deleteId}.`);
+          return Astro.redirect('/MyEvents');
     }
+
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -87,6 +88,7 @@ if (Astro.request.method === "POST") {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    
   }
 
   .delete-button:hover {
@@ -130,19 +132,20 @@ if (Astro.request.method === "POST") {
 </style>
 
 
-<Layout title='Confirm Delte Event'>
+<Layout title='Change Quit Event'>
 
   <div class="background"></div>
 
   <div class="container">
-    <h2 style="text-align: center; color:white">Are you sure you wanna delete this event?</h2>
+    <h2 style="text-align: center; color:white">Confirm Event withdrawl!</h2>
     
     <form method="POST">
-        <input type="hidden" name="action" value="logout">
-        <button class="delete-button"type="submit">Delete event</button>
+    
+        <button class="delete-button"type="submit">RESIGN</button>
+        
       </form>
       <br/>
-      <button class="button" onclick="window.location.href='/ManageEvents'">Nah, ill keep it!</button>
+      <button class="button" onclick="window.location.href='/MyEvents'">Keep Event Registration</button>
     
  
 </Layout>

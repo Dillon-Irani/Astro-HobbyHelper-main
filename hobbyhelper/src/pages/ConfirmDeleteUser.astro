@@ -3,12 +3,10 @@ import Layout from '../layouts/Layout.astro';
 import SignoutButton from '../components/SignoutButton.astro';
 import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from '../components/userInformation.js';
 import { XataClient } from '../xata.js';
-// Redirect to hobby home page if not logged in 
 const isAdmin = isLoggedIn.get() && userInfo.get().userType === 'admin';
 if (!isAdmin) {
   return Astro.redirect('/HobbyHome'); 
 };
-
 const xata = new XataClient({
   apiKey: import.meta.env.XATA_API_KEY,
   branch: import.meta.env.XATA_BRANCH
@@ -28,14 +26,14 @@ if (Astro.request.method === "POST") {
   let deleteId = parseInt(searchQuery.slice(startIndex), 10);
   console.log(deleteId);
   
-  const eventToDelete = await xata.db.events.filter({
-      event_id: deleteId
+  const userToDelete = await xata.db.hh_user.filter({
+      user_id: deleteId
   }).getMany();
-  console.log(eventToDelete);
+  console.log(userToDelete);
 
-  await xata.db.events.delete(eventToDelete);
-          console.log(`Event with ID ${deleteId} has been deleted successfully.`);
-          return Astro.redirect('/ManageEvents');
+  await xata.db.hh_user.delete(userToDelete);
+          console.log(`User with ID ${deleteId} has been deleted Eliminated.`);
+          return Astro.redirect('/ManageUsers');
        
     }
   } catch (error) {
@@ -130,19 +128,19 @@ if (Astro.request.method === "POST") {
 </style>
 
 
-<Layout title='Confirm Delte Event'>
+<Layout title='Confirm Delete User'>
 
   <div class="background"></div>
 
   <div class="container">
-    <h2 style="text-align: center; color:white">Are you sure you wanna delete this event?</h2>
+    <h2 style="text-align: center; color:white">Are you sure you wanna delete this User?</h2>
     
     <form method="POST">
         <input type="hidden" name="action" value="logout">
-        <button class="delete-button"type="submit">Delete event</button>
+        <button class="delete-button"type="submit">REMOVE USER</button>
       </form>
       <br/>
-      <button class="button" onclick="window.location.href='/ManageEvents'">Nah, ill keep it!</button>
+      <button class="button" onclick="window.location.href='/ManageUsers'">Spare them, for now...</button>
     
  
 </Layout>

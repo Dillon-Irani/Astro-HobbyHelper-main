@@ -610,7 +610,7 @@ console.log(getUserInfo());
             <div class={`${styles2['product-container']}`}>
               {recommendedProducts.slice(0, 4).map((product) => (
                 <a href={"/Products/" + product.product_id} ={product.product_id}>
-                  <div ={product.product_id} class={styles['product-card']}>
+                  <div ={product.product_id} class={styles2['product-card']}>
                     <div class={styles2['title-div']}>
                       <h1 class={styles2['product-name']}>{product.product_name}</h1>
                       
@@ -683,17 +683,19 @@ console.log(getUserInfo());
     </div>
     <div class="home-container19">
       <div class="home-container20">
-        <h2 style="text-align: center; color:white; font-size: 2.2em;">Contact Us!</h2>
+       
 
         <h1 class="home-text62">
-          
           <span>- Is there anything else we can help you with?&nbsp;</span>
+          <br />
+          <span>- Want to Host your own event?&nbsp;</span>
           <br />
           <span>- Find a bug?</span>
           <br />
           <span>- Wanna say Hi?</span>
           <br />
         </h1>
+        <h2 style="text-align: center; color:rgb(162, 136, 190); font-size: 2.2em;">Contact Us!</h2>
         <a href="/ContactUs" class="tester">
           <button type="button" class="home-button3 button">
             <span>
