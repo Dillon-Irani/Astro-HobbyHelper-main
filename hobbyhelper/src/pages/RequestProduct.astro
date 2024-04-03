@@ -15,6 +15,14 @@ if (Astro.request.method === "POST") {
     const data = await Astro.request.formData();
     const action = data.get('action'); // Get the value of the 'action' field
 
+      // Fetch users sorted by user_id in descending order
+      const { records: requests } = await xata.db.requests
+      .sort( 'request_id', 'desc' )
+      .getPaginated({ pagination: { size: 1 } });
+
+    // Calculate the new user_id
+      const newId = requests.length > 0 ? requests[0].request_id + 1 : 1;
+
     // Check if the action is 'contactFormSubmit'
     if (action === 'requestFormSubmit') {
       const inputMessage = String(data.get("message"));
@@ -26,6 +34,7 @@ if (Astro.request.method === "POST") {
         request_description: inputMessage,
         date_requested: currentDate,
         example_product: inputExample,
+        request_id: newId,
       });
 
       console.log("request form submission:", messages);

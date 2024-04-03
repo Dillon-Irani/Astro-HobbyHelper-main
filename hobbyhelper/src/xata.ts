@@ -120,6 +120,7 @@ const tables = [
       { name: "request_description", type: "string" },
       { name: "date_requested", type: "datetime" },
       { name: "example_product", type: "string" },
+      { name: "request_id", type: "int", unique: true },
     ],
   },
 ] as const;

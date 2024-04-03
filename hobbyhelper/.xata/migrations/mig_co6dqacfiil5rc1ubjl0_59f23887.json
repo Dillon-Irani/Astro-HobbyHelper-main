@@ -1,0 +1,17 @@
+{
+  "id": "mig_co6dqacfiil5rc1ubjl0",
+  "parentID": "mig_co5hpukfiil5rc1ub580",
+  "checksum": "1:59f2388793bf0278dc9ee4c09ee42d85b9dd9b3cb69d9c7e2c9a35c367ad5ceb",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "request_id",
+          "type": "int",
+          "unique": true
+        },
+        "table": "requests"
+      }
+    }
+  ]
+}
