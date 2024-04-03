@@ -12,6 +12,7 @@ const { records } = await xata.db.product_category.getPaginated({
     size: 50
   }
 })
+return Astro.redirect('/HobbyHome'); 
 ---
 
 <Layout title="Welcome to Astro.">
