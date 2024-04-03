@@ -153,6 +153,22 @@ if (Astro.request.method === "POST") {
     button:hover {
       background-color: #45a049;
     }
+
+    .backlog-button {
+    background-color: #007bff; /* Nice blue color */
+    color: white; /* Text color */
+    padding: 10px 20px; /* Adjust padding as needed */
+    border: none;
+    border-radius: 5px;
+    width: 15%;
+    cursor: pointer;
+    display: block; /* Ensure it spans the full width */
+    margin: 0 auto; /* Center horizontally */
+}
+
+.backlog-button:hover {
+    background-color: #0056b3; /* Darker shade of blue on hover */
+}
   </style>
 <Layout title='Add variation'>
   {message.error && (
@@ -176,4 +192,6 @@ if (Astro.request.method === "POST") {
       <button type="submit">Add Variation</button>
     </form>
   </div>
+  <br />
+  <button class='backlog-button' onclick="window.location.href='/AdminDashboard'" >Return to Dashboard</button>
 </Layout>

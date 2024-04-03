@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import SignoutButton from '../components/SignoutButton.astro';
 import { userInfo, getUserInfo, isLoggedIn, clearUserInfo  } from '../components/userInformation.js';
 import { XataClient } from '../xata.js';
+import Events from './Events.astro';
 
 
 const xata = new XataClient({
@@ -20,7 +21,6 @@ const { records: event } = await xata.db.events.getPaginated({
   }
 });
 
-
 if (Astro.request.method === "POST") {
   try {
     const data = await Astro.request.formData();
@@ -34,9 +34,11 @@ if (Astro.request.method === "POST") {
       event_id: deleteId,
       event_attendee_user_id: signedInUserId
   }).getMany(); 
+  
   await xata.db.events.delete(eventToDelete);
           console.log(` You have succesfully resigned from Event:${deleteId}.`);
           return Astro.redirect('/MyEvents');
+          
     }
 
   } catch (error) {

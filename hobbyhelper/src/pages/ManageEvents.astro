@@ -141,6 +141,21 @@ listEvents.sort((a, b) => a.event_id - b.event_id);
   .price-button:hover {
     background-color: #4e6c2f;
   }
+  .backlog-button {
+    background-color: #007bff; /* Nice blue color */
+    color: white; /* Text color */
+    padding: 10px 20px; /* Adjust padding as needed */
+    border: none;
+    border-radius: 5px;
+    width: 15%;
+    cursor: pointer;
+    display: block; /* Ensure it spans the full width */
+    margin: 0 auto; /* Center horizontally */
+}
+
+.backlog-button:hover {
+    background-color: #0056b3; /* Darker shade of blue on hover */
+}
   
 </style>
 <script is:inline>
@@ -159,6 +174,8 @@ listEvents.sort((a, b) => a.event_id - b.event_id);
     };
     </script>
 <Layout title="Manage Events">
+  
+  <button class='backlog-button' onclick="window.location.href='/AdminDashboard'" >Return to Dashboard</button>
   <div class="table-container">
     <table>
       <thead>
