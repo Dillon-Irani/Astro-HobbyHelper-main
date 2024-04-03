@@ -1,0 +1,17 @@
+{
+  "id": "mig_co6dvcsfiil5rc1ubjq0",
+  "parentID": "mig_co6dqacfiil5rc1ubjl0",
+  "checksum": "1:516adfc2de266766c7bac7653d3c10f839ebf5d8e86c49db10e8ea992d6bacab",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "contact_id",
+          "type": "int",
+          "unique": true
+        },
+        "table": "hh_contact_us"
+      }
+    }
+  ]
+}

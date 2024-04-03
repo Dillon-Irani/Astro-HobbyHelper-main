@@ -1,0 +1,182 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { XataClient } from '../xata.js';
+import { userInfo, getUserInfo, isLoggedIn, clearUserInfo } from '../components/userInformation.js';
+// Redirect to hobby home page if not admin 
+const isAdmin = isLoggedIn.get() && userInfo.get().userType === 'admin';
+if (!isAdmin) {
+  return Astro.redirect('/HobbyHome'); 
+};
+
+const xata = new XataClient({
+  apiKey: import.meta.env.XATA_API_KEY,
+  branch: import.meta.env.XATA_BRANCH
+});
+
+const { records: backlogRecords } = await xata.db.backlog.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: productCategories } = await xata.db.product_category.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: variationOptions } = await xata.db.product_variation_option.getPaginated({
+  pagination: {
+    size: 200
+  }
+});
+const { records: products } = await xata.db.product.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: product_configuration } = await xata.db.product_configuration.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: users } = await xata.db.hh_user.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: reservations } = await xata.db.reservations.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+const { records: hh_contact_us } = await xata.db.hh_contact_us.getPaginated({
+  pagination: {
+    size: 200,
+  },
+});
+
+
+
+
+---
+
+<style>
+  .table-container {
+    max-width: 800px;
+    margin: 20px auto;
+  }
+
+  table {
+    background-color: #535C91; 
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    color:white
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+  tr{}
+  .backlog-button {
+    background-color: #007bff; /* Nice blue color */
+    color: white; /* Text color */
+    padding: 10px 20px; /* Adjust padding as needed */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block; /* Ensure it spans the full width */
+    margin: 0 auto; /* Center horizontally */
+}
+
+.backlog-button:hover {
+    background-color: #0056b3; /* Darker shade of blue on hover */
+}
+.delete-button {
+    background-color: #af4c4c;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .delete-button:hover {
+    background-color: #a04545;
+  }
+  .qty-button {
+    background-color: #af8b4c;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .qty-button:hover {
+    background-color: rgb(128, 113, 56);
+  }
+  .price-button {
+    background-color: #7daf4c;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .price-button:hover {
+    background-color: #4e6c2f;
+  }
+  
+</style>
+<script is:inline>
+
+    function deleteContact(contactId) {
+      window.location.href = `/ConfirmDeleteMessage?delete=${contactId}`;
+  
+    };
+    function changeProductQty(reservationId) {
+      window.location.href = `/ConfirmChangeProductQty?change=${reservationId}`;
+  
+    };
+
+    </script>
+<Layout title="Manage Messages">
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Contact Email</th>
+          <th>Contact Phone #</th>
+          <th>Message</th>
+          <th>Manage Request</th>
+        </tr>
+      </thead>
+      <tbody>
+        {hh_contact_us.map(contact => (
+          <tr key={contact.contact_id}>
+            <td>{contact.name}</td>
+            <td>{contact.email}</td>
+            <td>{contact.phone}</td>
+            <td>{contact.message}</td>
+            <td>
+              <button class='delete-button' type="button" onclick={`deleteContact(${contact.contact_id})`}>Delete</button>
+              <br/>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</Layout>

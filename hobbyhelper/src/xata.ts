@@ -71,6 +71,7 @@ const tables = [
       { name: "email", type: "string" },
       { name: "phone", type: "int" },
       { name: "message", type: "string" },
+      { name: "contact_id", type: "int", unique: true },
     ],
   },
   {
