@@ -45,7 +45,7 @@ if (Astro.request.method === "POST") {
   await xata.db.product.delete(productToDelete);
           console.log(`Product with ID ${deleteId} has been deleted successfully.`);
           
-  await xata.db.product.delete(productToDelete2);
+  await xata.db.product_configuration.delete(productToDelete2);
           console.log(`Product with ID ${deleteId} has been deleted successfully.`);
           return Astro.redirect('/ManageProducts');
        
